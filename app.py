@@ -2,14 +2,17 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import sqlite3
 import os
-from database import get_db, init_db
+from database import get_db, init_db, DB_PATH
 
 app = Flask(__name__)
 CORS(app)
 
 # Initialize database on startup if not exists
-if not os.path.exists(os.path.join(os.path.dirname(__file__), 'dormitory.db')):
-    init_db()
+if not os.path.exists(DB_PATH):
+    try:
+        init_db()
+    except Exception as e:
+        print("Init DB error:", e)
 
 def dict_from_row(row):
     return dict(row) if row else None

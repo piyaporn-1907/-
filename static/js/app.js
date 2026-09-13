@@ -68,16 +68,16 @@ async function loadUsers() {
 function switchRole(userId) {
     const user = usersList.find(u => u.id == userId);
     if (!user) return;
-    
+
     currentUser = user;
     updateUserBanner(user);
-    
+
     loadStats();
     loadRooms();
     loadRepairs();
     loadBills();
     loadBookings();
-    
+
     const ownerSection = document.getElementById('ownerRevenueSection');
     if (ownerSection) {
         ownerSection.style.display = user.role === 'owner' ? 'block' : 'none';
@@ -104,7 +104,7 @@ function updateUserBanner(user) {
             <span> | <i class="fa-solid fa-phone"></i> ${user.phone}</span>
         `;
     }
-    
+
     if (badgeEl) badgeEl.innerText = getRoleTitle(user.role);
 
     const isAdminOrOwner = user.role === 'admin' || user.role === 'owner';
@@ -188,7 +188,7 @@ async function loadStats() {
         document.getElementById('statAvailableRooms').innerText = data.available_rooms;
         document.getElementById('statOccupiedRooms').innerText = data.occupied_rooms;
         document.getElementById('statPendingRepairs').innerText = data.pending_repairs;
-        
+
         document.getElementById('statMonthlyRevenue').innerText = `฿${data.monthly_revenue.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
         document.getElementById('statPendingRevenue').innerText = `฿${data.pending_revenue.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
 
@@ -204,7 +204,7 @@ async function loadStats() {
 function initChart() {
     const ctx = document.getElementById('revenueChart');
     if (!ctx) return;
-    
+
     revenueChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -232,11 +232,11 @@ function initChart() {
 async function loadRooms() {
     const status = document.getElementById('filterRoomStatus').value;
     const floor = document.getElementById('filterRoomFloor').value;
-    
+
     try {
         const res = await fetch(`/api/rooms?status=${status}&floor=${floor}`);
         const rooms = await res.json();
-        
+
         const container = document.getElementById('roomsContainer');
         container.innerHTML = '';
 
@@ -298,11 +298,11 @@ function openBookingModal(roomId, roomNumber, price) {
     document.getElementById('bookRoomId').value = roomId;
     document.getElementById('bookRoomNumber').value = `ห้อง ${roomNumber}`;
     document.getElementById('bookRoomPrice').value = `฿${price.toLocaleString()} บาท/เดือน`;
-    
+
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     document.getElementById('bookMoveInDate').value = tomorrow.toISOString().split('T')[0];
-    
+
     openModal('modalBooking');
 }
 

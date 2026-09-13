@@ -1,7 +1,20 @@
 import sqlite3
 import os
+import shutil
 
-DB_PATH = os.path.join(os.path.dirname(__file__), 'dormitory.db')
+DB_ORIGINAL_PATH = os.path.join(os.path.dirname(__file__), 'dormitory.db')
+
+# For Vercel serverless environment support
+if os.environ.get('VERCEL') or not os.access(os.path.dirname(__file__), os.W_OK):
+    TMP_DIR = '/tmp'
+    DB_PATH = os.path.join(TMP_DIR, 'dormitory.db')
+    if not os.path.exists(DB_PATH) and os.path.exists(DB_ORIGINAL_PATH):
+        try:
+            shutil.copyfile(DB_ORIGINAL_PATH, DB_PATH)
+        except Exception as e:
+            print("DB Copy Warning:", e)
+else:
+    DB_PATH = DB_ORIGINAL_PATH
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
