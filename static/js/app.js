@@ -695,3 +695,47 @@ function openModal(modalId) {
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('active');
 }
+
+function openNewRoomModal() {
+    openModal('modalNewRoom');
+}
+
+async function submitNewRoom(event) {
+    event.preventDefault();
+    const roomNumber = document.getElementById('newRoomNumber').value;
+    const floor = parseInt(document.getElementById('newRoomFloor').value);
+    const roomType = document.getElementById('newRoomType').value;
+    const price = parseFloat(document.getElementById('newRoomPrice').value);
+    const deposit = parseFloat(document.getElementById('newRoomDeposit').value);
+    const desc = document.getElementById('newRoomDesc').value;
+    const imgUrl = document.getElementById('newRoomImage').value;
+
+    try {
+        const res = await fetch('/api/rooms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                room_number: roomNumber,
+                floor: floor,
+                room_type: roomType,
+                price_per_month: price,
+                deposit: deposit,
+                status: 'available',
+                description: desc,
+                image_url: imgUrl
+            })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            showToast("✅ " + data.message, 'success');
+            closeModal('modalNewRoom');
+            loadRooms();
+            loadStats();
+        } else {
+            showToast("❌ " + data.error, 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("เกิดข้อผิดพลาดในการเพิ่มห้องพักใหม่", 'error');
+    }
+}

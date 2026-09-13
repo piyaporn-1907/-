@@ -432,6 +432,63 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}?v=6.0"></script>
+    <!-- New Room Modal -->
+    <div class="modal-backdrop" id="modalNewRoom">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-house-medical"></i> เพิ่มข้อมูลห้องพักใหม่</h3>
+                <button onclick="closeModal('modalNewRoom')" style="background:transparent; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formNewRoom" onsubmit="submitNewRoom(event)">
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">หมายเลขห้องพัก:</label>
+                        <input type="text" id="newRoomNumber" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" placeholder="เช่น 303" required>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">ชั้น:</label>
+                        <select id="newRoomFloor" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" required>
+                            <option value="1">ชั้น 1</option>
+                            <option value="2">ชั้น 2</option>
+                            <option value="3" selected>ชั้น 3</option>
+                            <option value="4">ชั้น 4</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">ประเภทห้องพัก:</label>
+                        <select id="newRoomType" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" required>
+                            <option value="ห้องเดี่ยว Standard">ห้องเดี่ยว Standard</option>
+                            <option value="ห้องคู่ Deluxe">ห้องคู่ Deluxe</option>
+                            <option value="ห้อง VIP Suite">ห้อง VIP Suite</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                        <div>
+                            <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">ค่าเช่าต่อเดือน (บาท):</label>
+                            <input type="number" id="newRoomPrice" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" value="4800" required>
+                        </div>
+                        <div>
+                            <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">เงินประกัน (บาท):</label>
+                            <input type="number" id="newRoomDeposit" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" value="5000" required>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">รายละเอียดห้องพัก:</label>
+                        <textarea id="newRoomDesc" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" rows="3" placeholder="ระบุรายละเอียด อุปกรณ์ เฟอร์นิเจอร์...">เตียงเดี่ยว 3.5 ฟุต, โต๊ะอ่านหนังสือ, ตู้เสื้อผ้า, เครื่องปรับอากาศ, ระเบียง</textarea>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">URL รูปภาพประกอบ:</label>
+                        <input type="text" id="newRoomImage" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" value="https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=600&q=80">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-glowing" style="background:#334155; color:white;" onclick="closeModal('modalNewRoom')">ยกเลิก</button>
+                        <button type="submit" class="btn-glowing success"><i class="fa-solid fa-plus-circle"></i> บันทึกเพิ่มห้องใหม่</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=7.0"></script>
 </body>
 </html>
