@@ -1,6 +1,6 @@
 /* ============================================================
    ระบบจัดการหอพักนักศึกษา - Student Dormitory Management System
-   Frontend Interactive SPA Controller (Hyper-Modern Executive Edition)
+   Frontend Interactive SPA Controller (Next-Gen Sidebar Edition)
    ============================================================ */
 
 let currentUser = {
@@ -84,20 +84,22 @@ function switchRole(userId) {
         ownerSection.style.display = user.role === 'owner' ? 'block' : 'none';
     }
 
-    showToast(`สลับมุมมองเป็น: ${user.full_name} (${getRoleTitle(user.role)})`, 'success');
+    showToast(`สลับสิทธิ์ผู้ใช้เป็น: ${user.full_name}`, 'success');
 }
 
 function updateUserBanner(user) {
     document.getElementById('bannerUserName').innerText = `${user.full_name}`;
+    document.getElementById('welcomeGreeting').innerText = `ยินดีต้อนรับ! ${user.full_name} 👋`;
+    document.getElementById('userAvatar').innerText = user.full_name.charAt(0);
+
     document.getElementById('bannerUserDetail').innerHTML = `
         <span><i class="fa-solid fa-id-badge"></i> ${getRoleTitle(user.role)}</span>
-        ${user.room_number ? '<span><i class="fa-solid fa-door-open"></i> ห้องพัก: ' + user.room_number + '</span>' : ''}
-        <span><i class="fa-solid fa-phone"></i> ${user.phone}</span>
+        ${user.room_number ? '<span> | <i class="fa-solid fa-door-open"></i> ห้อง: ' + user.room_number + '</span>' : ''}
+        <span> | <i class="fa-solid fa-phone"></i> ${user.phone}</span>
     `;
     
     const badge = document.getElementById('bannerRoleBadge');
-    badge.className = `hero-badge-pill ${user.role}`;
-    badge.innerHTML = `<i class="fa-solid ${user.role === 'student' ? 'fa-user-graduate' : (user.role === 'admin' ? 'fa-user-shield' : 'fa-crown')}"></i> ${getRoleTitle(user.role)}`;
+    badge.innerText = getRoleTitle(user.role);
 
     // Toggle Role-specific UI buttons
     const isAdminOrOwner = user.role === 'admin' || user.role === 'owner';
@@ -110,7 +112,7 @@ function updateUserBanner(user) {
     if (btnAddRoom) btnAddRoom.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
     if (btnAnnounce) btnAnnounce.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
     if (btnPostAnnounce) btnPostAnnounce.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
-    if (tabBookings) tabBookings.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
+    if (tabBookings) tabBookings.style.display = isAdminOrOwner ? 'flex' : 'none';
     if (ownerRevenueSection) ownerRevenueSection.style.display = user.role === 'owner' ? 'block' : 'none';
 }
 
@@ -127,10 +129,10 @@ function getRoleTitle(role) {
 // Navigation Tabs Switcher
 // ------------------------------------------------------------
 function switchTab(tabId) {
-    document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-    const activeBtn = Array.from(document.querySelectorAll('.tab-pill')).find(btn => btn.getAttribute('onclick').includes(tabId));
+    const activeBtn = Array.from(document.querySelectorAll('.sidebar-link')).find(btn => btn.getAttribute('onclick').includes(tabId));
     if (activeBtn) activeBtn.classList.add('active');
 
     const targetTab = document.getElementById(`tab-${tabId}`);
@@ -179,16 +181,16 @@ function initChart() {
             labels: ['มีผู้พักอาศัย (Occupied)', 'ห้องว่าง (Available)', 'กำลังซ่อม (Maintenance)', 'ติดจอง (Reserved)'],
             datasets: [{
                 data: [3, 4, 1, 1],
-                backgroundColor: ['#f43f5e', '#10b981', '#f59e0b', '#4f46e5'],
+                backgroundColor: ['#f43f5e', '#10b981', '#f59e0b', '#6366f1'],
                 borderWidth: 3,
-                borderColor: '#ffffff'
+                borderColor: '#0f172a'
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'bottom', labels: { font: { family: 'Prompt', size: 12, weight: '600' } } },
-                title: { display: true, text: 'สัดส่วนสถานะห้องพักทั้งหมด', font: { family: 'Prompt', size: 14, weight: 'bold' } }
+                legend: { position: 'bottom', labels: { font: { family: 'Prompt', size: 12 }, color: '#94a3b8' } },
+                title: { display: true, text: 'สัดส่วนสถานะห้องพักทั้งหมด', font: { family: 'Prompt', size: 14, weight: 'bold' }, color: '#ffffff' }
             }
         }
     });
@@ -209,7 +211,7 @@ async function loadRooms() {
         container.innerHTML = '';
 
         if (rooms.length === 0) {
-            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 4rem; background: var(--bg-surface); border-radius: var(--radius-md); border: 1px dashed var(--border-subtle);"><i class="fa-solid fa-door-closed" style="font-size:3.5rem; margin-bottom:1rem; opacity:0.4; color:var(--accent-primary);"></i><br>ไม่พบข้อมูลห้องพักตรงตามเงื่อนไข</div>`;
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 4rem; background: var(--bg-card); border-radius: var(--radius-md); border: 1px dashed var(--border-glass);"><i class="fa-solid fa-door-closed" style="font-size:3.5rem; margin-bottom:1rem; opacity:0.4; color:var(--accent-primary);"></i><br>ไม่พบข้อมูลห้องพักตรงตามเงื่อนไข</div>`;
             return;
         }
 
@@ -223,32 +225,32 @@ async function loadRooms() {
             }[room.status] || room.status;
 
             const cardHtml = `
-                <div class="room-luxury-card">
-                    <div class="room-media-wrapper">
-                        <img src="${room.image_url || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80'}" class="room-media-img" alt="Room ${room.room_number}">
-                        <span class="room-status-badge status-${room.status}">
-                            <span class="pulse-dot"></span> ${statusLabel}
+                <div class="room-modern-card">
+                    <div class="room-banner-img">
+                        <img src="${room.image_url || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80'}" alt="Room ${room.room_number}">
+                        <span class="room-status-pill status-${room.status}">
+                            <span class="live-dot"></span> ${statusLabel}
                         </span>
                     </div>
-                    <div class="room-card-content">
-                        <div class="room-card-header">
-                            <div class="room-card-title">ห้อง ${room.room_number} (ชั้น ${room.floor})</div>
-                            <div class="room-card-price">฿${room.price_per_month.toLocaleString()} <span>/เดือน</span></div>
+                    <div class="room-content">
+                        <div class="room-title-row">
+                            <div class="room-name">ห้อง ${room.room_number} (ชั้น ${room.floor})</div>
+                            <div class="room-price-tag">฿${room.price_per_month.toLocaleString()} <span>/เดือน</span></div>
                         </div>
-                        <div class="room-amenities-tags">
-                            <span class="amenity-chip"><i class="fa-solid fa-bed"></i> ${room.room_type}</span>
-                            <span class="amenity-chip"><i class="fa-solid fa-snowflake"></i> เครื่องปรับอากาศ</span>
-                            <span class="amenity-chip"><i class="fa-solid fa-wifi"></i> Free High-Speed Wi-Fi</span>
+                        <div class="amenities-pills">
+                            <span class="pill-tag"><i class="fa-solid fa-bed"></i> ${room.room_type}</span>
+                            <span class="pill-tag"><i class="fa-solid fa-snowflake"></i> เครื่องปรับอากาศ</span>
+                            <span class="pill-tag"><i class="fa-solid fa-wifi"></i> Free Wi-Fi</span>
                         </div>
-                        <div class="room-desc">${room.description || 'เตียงเดี่ยว 3.5 ฟุต, โต๊ะอ่านหนังสือ, ตู้เสื้อผ้า, เครื่องปรับอากาศ, ระเบียง'}</div>
+                        <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.25rem;">${room.description || 'เตียงเดี่ยว 3.5 ฟุต, โต๊ะอ่านหนังสือ, ตู้เสื้อผ้า, เครื่องปรับอากาศ, ระเบียง'}</div>
                         <div style="margin-top:auto;">
                             ${isAvailable && currentUser.role === 'student' ? `
-                                <button class="btn-action btn-accent" style="width:100%;" onclick="openBookingModal(${room.id}, '${room.room_number}', ${room.price_per_month})">
+                                <button class="btn-glowing primary" style="width:100%;" onclick="openBookingModal(${room.id}, '${room.room_number}', ${room.price_per_month})">
                                     <i class="fa-solid fa-calendar-plus"></i> จองห้องพักนี้
                                 </button>
                             ` : `
-                                <button class="btn-action btn-outline" style="width:100%; opacity:0.6;" disabled>
-                                    ${isAvailable ? 'ห้องว่าง (สลับเป็นนักศึกษาเพื่อจอง)' : statusLabel}
+                                <button class="btn-glowing" style="width:100%; background:rgba(255,255,255,0.06); color:var(--text-muted);" disabled>
+                                    ${isAvailable ? 'ห้องว่าง (สลับสิทธิ์เป็นนักศึกษาเพื่อจอง)' : statusLabel}
                                 </button>
                             `}
                         </div>
@@ -325,34 +327,34 @@ async function loadRepairs() {
 
         repairs.forEach(r => {
             const statusBadge = {
-                'pending': '<span class="badge-capsule badge-pending"><i class="fa-solid fa-clock"></i> รอดำเนินการ</span>',
-                'in_progress': '<span class="badge-capsule badge-in_progress"><i class="fa-solid fa-spinner fa-spin"></i> กำลังซ่อมแซม</span>',
-                'completed': '<span class="badge-capsule badge-completed"><i class="fa-solid fa-check-circle"></i> ซ่อมแซมเสร็จสิ้น</span>'
+                'pending': '<span style="background:rgba(245,158,11,0.2); color:#fbbf24; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-clock"></i> รอดำเนินการ</span>',
+                'in_progress': '<span style="background:rgba(6,182,212,0.2); color:#38bdf8; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-spinner fa-spin"></i> กำลังซ่อมแซม</span>',
+                'completed': '<span style="background:rgba(16,185,129,0.2); color:#34d399; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-check-circle"></i> ซ่อมแซมเสร็จสิ้น</span>'
             }[r.status] || r.status;
 
             const priorityBadge = {
                 'low': '<span style="color:var(--text-muted); font-size:0.85rem;">ปกติ</span>',
-                'medium': '<span style="color:var(--cyan); font-size:0.85rem; font-weight:700;">ปานกลาง</span>',
-                'high': '<span style="color:var(--amber); font-size:0.85rem; font-weight:700;">ด่วน</span>',
-                'urgent': '<span style="color:var(--rose); font-size:0.85rem; font-weight:800;">ด่วนที่สุด</span>'
+                'medium': '<span style="color:#38bdf8; font-size:0.85rem; font-weight:700;">ปานกลาง</span>',
+                'high': '<span style="color:#fbbf24; font-size:0.85rem; font-weight:700;">ด่วน</span>',
+                'urgent': '<span style="color:#fb7185; font-size:0.85rem; font-weight:800;">ด่วนที่สุด</span>'
             }[r.priority] || r.priority;
 
             const row = `
-                <tr>
-                    <td><b>#REP-${r.id}</b></td>
-                    <td><b>ห้อง ${r.room_number}</b><br><small style="color:var(--text-muted);">${r.student_name}</small></td>
-                    <td><b>${r.title}</b><br><small style="color:var(--text-muted);">${r.description}</small></td>
-                    <td><span class="amenity-chip">${r.category}</span></td>
-                    <td>${priorityBadge}</td>
-                    <td>${statusBadge}</td>
-                    <td>${r.admin_note || '-'}</td>
-                    <td><small>${new Date(r.reported_at).toLocaleDateString('th-TH')}</small></td>
-                    <td>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                    <td style="padding:1.1rem 1.5rem;"><b>#REP-${r.id}</b></td>
+                    <td style="padding:1.1rem 1.5rem;"><b>ห้อง ${r.room_number}</b><br><small style="color:var(--text-muted);">${r.student_name}</small></td>
+                    <td style="padding:1.1rem 1.5rem;"><b>${r.title}</b><br><small style="color:var(--text-muted);">${r.description}</small></td>
+                    <td style="padding:1.1rem 1.5rem;"><span class="pill-tag">${r.category}</span></td>
+                    <td style="padding:1.1rem 1.5rem;">${priorityBadge}</td>
+                    <td style="padding:1.1rem 1.5rem;">${statusBadge}</td>
+                    <td style="padding:1.1rem 1.5rem;">${r.admin_note || '-'}</td>
+                    <td style="padding:1.1rem 1.5rem;"><small>${new Date(r.reported_at).toLocaleDateString('th-TH')}</small></td>
+                    <td style="padding:1.1rem 1.5rem;">
                         ${(currentUser.role === 'admin' || currentUser.role === 'owner') && r.status !== 'completed' ? `
-                            <button class="btn-action btn-emerald" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="updateRepairStatus(${r.id}, 'completed')">
+                            <button class="btn-glowing success" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="updateRepairStatus(${r.id}, 'completed')">
                                 <i class="fa-solid fa-check"></i> เสร็จสิ้น
                             </button>
-                            <button class="btn-action btn-amber" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="updateRepairStatus(${r.id}, 'in_progress')">
+                            <button class="btn-glowing warning" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="updateRepairStatus(${r.id}, 'in_progress')">
                                 กำลังทำ
                             </button>
                         ` : '-'}
@@ -441,33 +443,33 @@ async function loadBills() {
 
         bills.forEach(b => {
             const statusBadge = {
-                'unpaid': '<span class="badge-capsule badge-unpaid"><i class="fa-solid fa-triangle-exclamation"></i> ยังไม่ชำระ</span>',
-                'pending_verification': '<span class="badge-capsule badge-pending_verification"><i class="fa-solid fa-spinner fa-spin"></i> รอตรวจสอบสลิป</span>',
-                'paid': '<span class="badge-capsule badge-paid"><i class="fa-solid fa-circle-check"></i> ชำระแล้ว</span>'
+                'unpaid': '<span style="background:rgba(244,63,94,0.2); color:#fb7185; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> ยังไม่ชำระ</span>',
+                'pending_verification': '<span style="background:rgba(6,182,212,0.2); color:#38bdf8; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-spinner fa-spin"></i> รอตรวจสอบสลิป</span>',
+                'paid': '<span style="background:rgba(16,185,129,0.2); color:#34d399; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;"><i class="fa-solid fa-circle-check"></i> ชำระแล้ว</span>'
             }[b.status] || b.status;
 
             const row = `
-                <tr>
-                    <td><b>รอบ ${b.month_year}</b></td>
-                    <td><b>ห้อง ${b.room_number}</b></td>
-                    <td>${b.student_name}</td>
-                    <td>฿${b.room_fee.toLocaleString()}</td>
-                    <td>น้ำ ฿${b.water_fee} / ไฟ ฿${b.electricity_fee}</td>
-                    <td><b style="color:var(--accent-primary); font-size:1.15rem; font-family:var(--font-numeric);">฿${b.total_amount.toLocaleString()}</b></td>
-                    <td><small>${b.due_date}</small></td>
-                    <td>${statusBadge}</td>
-                    <td>
-                        ${b.slip_url ? `<a href="${b.slip_url}" target="_blank" class="btn-action btn-outline" style="padding:0.3rem 0.75rem; font-size:0.82rem;"><i class="fa-solid fa-image"></i> ดูสลิป</a>` : '-'}
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                    <td style="padding:1.1rem 1.5rem;"><b>รอบ ${b.month_year}</b></td>
+                    <td style="padding:1.1rem 1.5rem;"><b>ห้อง ${b.room_number}</b></td>
+                    <td style="padding:1.1rem 1.5rem;">${b.student_name}</td>
+                    <td style="padding:1.1rem 1.5rem;">฿${b.room_fee.toLocaleString()}</td>
+                    <td style="padding:1.1rem 1.5rem;">น้ำ ฿${b.water_fee} / ไฟ ฿${b.electricity_fee}</td>
+                    <td style="padding:1.1rem 1.5rem;"><b style="color:#38bdf8; font-size:1.15rem;">฿${b.total_amount.toLocaleString()}</b></td>
+                    <td style="padding:1.1rem 1.5rem;"><small>${b.due_date}</small></td>
+                    <td style="padding:1.1rem 1.5rem;">${statusBadge}</td>
+                    <td style="padding:1.1rem 1.5rem;">
+                        ${b.slip_url ? `<a href="${b.slip_url}" target="_blank" style="color:#818cf8; text-decoration:none; font-size:0.85rem;"><i class="fa-solid fa-image"></i> ดูสลิป</a>` : '-'}
                     </td>
-                    <td>
+                    <td style="padding:1.1rem 1.5rem;">
                         ${currentUser.role === 'student' && b.status === 'unpaid' ? `
-                            <button class="btn-action btn-emerald" style="padding:0.35rem 0.85rem; font-size:0.85rem;" onclick="openPaymentModal(${b.id}, ${b.total_amount})">
+                            <button class="btn-glowing success" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="openPaymentModal(${b.id}, ${b.total_amount})">
                                 <i class="fa-solid fa-upload"></i> แนบสลิป
                             </button>
                         ` : ''}
 
                         ${(currentUser.role === 'admin' || currentUser.role === 'owner') && b.status === 'pending_verification' ? `
-                            <button class="btn-action btn-emerald" style="padding:0.35rem 0.85rem; font-size:0.85rem;" onclick="verifyPayment(${b.id}, 'approve')">
+                            <button class="btn-glowing success" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="verifyPayment(${b.id}, 'approve')">
                                 <i class="fa-solid fa-check"></i> ยืนยันสลิป
                             </button>
                         ` : ''}
@@ -541,27 +543,27 @@ async function loadBookings() {
 
         bookings.forEach(bk => {
             const statusBadge = {
-                'pending': '<span class="badge-capsule badge-pending">รอพิจารณา</span>',
-                'approved': '<span class="badge-capsule badge-paid">อนุมัติแล้ว</span>',
-                'rejected': '<span class="badge-capsule badge-unpaid">ปฏิเสธ</span>'
+                'pending': '<span style="background:rgba(245,158,11,0.2); color:#fbbf24; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;">รอพิจารณา</span>',
+                'approved': '<span style="background:rgba(16,185,129,0.2); color:#34d399; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;">อนุมัติแล้ว</span>',
+                'rejected': '<span style="background:rgba(244,63,94,0.2); color:#fb7185; padding:0.35rem 0.8rem; border-radius:20px; font-size:0.8rem; font-weight:700;">ปฏิเสธ</span>'
             }[bk.status] || bk.status;
 
             const row = `
-                <tr>
-                    <td><b>#BK-${bk.id}</b></td>
-                    <td><b>${bk.student_name}</b></td>
-                    <td>${bk.student_phone}</td>
-                    <td><b>ห้อง ${bk.room_number}</b></td>
-                    <td>${bk.room_type}</td>
-                    <td>${bk.move_in_date}</td>
-                    <td>${bk.note || '-'}</td>
-                    <td>${statusBadge}</td>
-                    <td>
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                    <td style="padding:1.1rem 1.5rem;"><b>#BK-${bk.id}</b></td>
+                    <td style="padding:1.1rem 1.5rem;"><b>${bk.student_name}</b></td>
+                    <td style="padding:1.1rem 1.5rem;">${bk.student_phone}</td>
+                    <td style="padding:1.1rem 1.5rem;"><b>ห้อง ${bk.room_number}</b></td>
+                    <td style="padding:1.1rem 1.5rem;">${bk.room_type}</td>
+                    <td style="padding:1.1rem 1.5rem;">${bk.move_in_date}</td>
+                    <td style="padding:1.1rem 1.5rem;">${bk.note || '-'}</td>
+                    <td style="padding:1.1rem 1.5rem;">${statusBadge}</td>
+                    <td style="padding:1.1rem 1.5rem;">
                         ${bk.status === 'pending' ? `
-                            <button class="btn-action btn-emerald" style="padding:0.35rem 0.85rem; font-size:0.85rem;" onclick="processBooking(${bk.id}, 'approved')">
+                            <button class="btn-glowing success" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="processBooking(${bk.id}, 'approved')">
                                 <i class="fa-solid fa-check"></i> อนุมัติ
                             </button>
-                            <button class="btn-action btn-rose" style="padding:0.35rem 0.85rem; font-size:0.85rem;" onclick="processBooking(${bk.id}, 'rejected')">
+                            <button class="btn-glowing" style="background:#dc2626; color:white; padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="processBooking(${bk.id}, 'rejected')">
                                 <i class="fa-solid fa-xmark"></i> ปฏิเสธ
                             </button>
                         ` : '-'}
@@ -606,16 +608,16 @@ async function loadAnnouncements() {
 
         items.forEach(item => {
             const card = `
-                <div class="announcement-card ${item.priority === 'urgent' ? 'urgent' : ''}">
-                    <div class="announcement-header">
-                        <div class="announcement-title">
-                            ${item.priority === 'urgent' ? '<span class="badge-capsule badge-unpaid" style="margin-right:0.6rem;"><i class="fa-solid fa-triangle-exclamation"></i> ประกาศด่วน</span>' : ''}
+                <div style="background:var(--bg-card); backdrop-filter:blur(16px); padding:1.5rem; border-radius:var(--radius-md); border:1px solid var(--border-glass); margin-bottom:1.25rem; border-left:5px solid ${item.priority === 'urgent' ? '#f43f5e' : '#6366f1'};">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem;">
+                        <div style="font-weight:700; font-size:1.15rem; color:white;">
+                            ${item.priority === 'urgent' ? '<span style="background:rgba(244,63,94,0.2); color:#fb7185; padding:0.25rem 0.65rem; border-radius:12px; font-size:0.75rem; margin-right:0.6rem;"><i class="fa-solid fa-triangle-exclamation"></i> ประกาศด่วน</span>' : ''}
                             ${item.title}
                         </div>
-                        <div class="announcement-date"><i class="fa-regular fa-clock"></i> ${new Date(item.created_at).toLocaleString('th-TH')}</div>
+                        <div style="font-size:0.82rem; color:var(--text-muted);"><i class="fa-regular fa-clock"></i> ${new Date(item.created_at).toLocaleString('th-TH')}</div>
                     </div>
-                    <div style="font-size: 0.98rem; color: var(--text-dark); margin-top: 0.6rem;">${item.content}</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem;"><i class="fa-solid fa-user-pen"></i> ประกาศโดย: ${item.author_name}</div>
+                    <div style="font-size:0.98rem; color:#e2e8f0; margin-top:0.6rem;">${item.content}</div>
+                    <div style="font-size:0.82rem; color:var(--text-muted); margin-top:0.75rem;"><i class="fa-solid fa-user-pen"></i> ประกาศโดย: ${item.author_name}</div>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', card);
