@@ -59,7 +59,7 @@ def seed_db():
         ('suda', 'pass123', 'สุดา รักเรียน', '650100456', '082-345-6789', 'suda@std.university.ac.th', 'student', 5), # room 201
         ('ananya', 'pass123', 'อนัญญ์ รุ่งเรือง', '660100789', '083-456-7890', 'ananya@std.university.ac.th', 'student', 7), # room 203
         ('wichai', 'pass123', 'วิชัย ขยันเรียน', '660100999', '084-567-8901', 'wichai@std.university.ac.th', 'student', None), # searching room
-        ('admin1', 'admin123', 'คุณสมศักดิ์ ผู้ดูแลหอ', None, '089-111-2222', 'caretaker@dorm.com', 'admin', None),
+        ('admin1', 'admin123', 'คุณปิยาภรณ์ ผู้ดูแลหอ', None, '089-111-2222', 'caretaker@dorm.com', 'admin', None),
         ('owner1', 'owner123', 'คุณดารานี เจ้าของหอพัก', None, '089-999-8888', 'owner@dorm.com', 'owner', None)
     ]
     cursor.executemany('''
