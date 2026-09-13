@@ -1,6 +1,6 @@
 /* ============================================================
    ระบบจัดการหอพักนักศึกษา - Student Dormitory Management System
-   Frontend Interactive SPA Controller JavaScript
+   Frontend Interactive SPA Controller JavaScript (Aesthetic Edition)
    ============================================================ */
 
 let currentUser = {
@@ -22,6 +22,32 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAnnouncements();
     initChart();
 });
+
+// Toast Notification System
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i>
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3500);
+}
 
 // ------------------------------------------------------------
 // User & Role Switcher Logic
@@ -54,28 +80,35 @@ function switchRole(userId) {
     loadBookings();
     
     // Auto switch to appropriate tab
-    if (user.role === 'owner') {
-        document.getElementById('ownerRevenueSection').style.display = 'block';
-    } else {
-        document.getElementById('ownerRevenueSection').style.display = 'none';
+    const ownerSection = document.getElementById('ownerRevenueSection');
+    if (ownerSection) {
+        ownerSection.style.display = user.role === 'owner' ? 'block' : 'none';
     }
+
+    showToast(`สลับบทบาทเป็น: ${user.full_name} (${getRoleTitle(user.role)})`, 'success');
 }
 
 function updateUserBanner(user) {
-    document.getElementById('bannerUserName').innerText = `${user.full_name} (${getRoleTitle(user.role)})`;
-    document.getElementById('bannerUserDetail').innerText = `บทบาท: ${getRoleTitle(user.role)} ${user.room_number ? '| ห้องพัก: ' + user.room_number : ''} | โทร: ${user.phone}`;
+    document.getElementById('bannerUserName').innerText = `${user.full_name}`;
+    document.getElementById('bannerUserDetail').innerHTML = `<i class="fa-solid fa-id-badge"></i> ${getRoleTitle(user.role)} ${user.room_number ? ' | <i class="fa-solid fa-door-open"></i> ห้องพัก: ' + user.room_number : ''} | <i class="fa-solid fa-phone"></i> ${user.phone}`;
     
     const badge = document.getElementById('bannerRoleBadge');
     badge.className = `badge-role ${user.role}`;
-    badge.innerText = getRoleTitle(user.role);
+    badge.innerHTML = `<i class="fa-solid ${user.role === 'student' ? 'fa-user-graduate' : (user.role === 'admin' ? 'fa-user-shield' : 'fa-crown')}"></i> ${getRoleTitle(user.role)}`;
 
     // Toggle Role-specific UI buttons
     const isAdminOrOwner = user.role === 'admin' || user.role === 'owner';
-    document.getElementById('btnAdminAddRoom').style.display = isAdminOrOwner ? 'inline-flex' : 'none';
-    document.getElementById('btnAdminAnnouncement').style.display = isAdminOrOwner ? 'inline-flex' : 'none';
-    document.getElementById('btnPostAnnouncement').style.display = isAdminOrOwner ? 'inline-flex' : 'none';
-    document.getElementById('tabBookings').style.display = isAdminOrOwner ? 'inline-flex' : 'none';
-    document.getElementById('ownerRevenueSection').style.display = user.role === 'owner' ? 'block' : 'none';
+    const btnAddRoom = document.getElementById('btnAdminAddRoom');
+    const btnAnnounce = document.getElementById('btnAdminAnnouncement');
+    const btnPostAnnounce = document.getElementById('btnPostAnnouncement');
+    const tabBookings = document.getElementById('tabBookings');
+    const ownerRevenueSection = document.getElementById('ownerRevenueSection');
+
+    if (btnAddRoom) btnAddRoom.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
+    if (btnAnnounce) btnAnnounce.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
+    if (btnPostAnnounce) btnPostAnnounce.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
+    if (tabBookings) tabBookings.style.display = isAdminOrOwner ? 'inline-flex' : 'none';
+    if (ownerRevenueSection) ownerRevenueSection.style.display = user.role === 'owner' ? 'block' : 'none';
 }
 
 function getRoleTitle(role) {
@@ -144,14 +177,16 @@ function initChart() {
             labels: ['มีผู้พักอาศัย (Occupied)', 'ห้องว่าง (Available)', 'กำลังซ่อม (Maintenance)', 'ติดจอง (Reserved)'],
             datasets: [{
                 data: [3, 4, 1, 1],
-                backgroundColor: ['#ef4444', '#10b981', '#f59e0b', '#2563eb']
+                backgroundColor: ['#ef4444', '#10b981', '#f59e0b', '#3b82f6'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'bottom' },
-                title: { display: true, text: 'สัดส่วนสถานะห้องพักทั้งหมด' }
+                legend: { position: 'bottom', labels: { font: { family: 'Prompt', size: 12 } } },
+                title: { display: true, text: 'สัดส่วนสถานะห้องพักทั้งหมด', font: { family: 'Prompt', size: 14, weight: 'bold' } }
             }
         }
     });
@@ -172,31 +207,33 @@ async function loadRooms() {
         container.innerHTML = '';
 
         if (rooms.length === 0) {
-            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">ไม่พบข้อมูลห้องพักตรงตามเงื่อนไข</div>`;
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 4rem; background: var(--bg-card); border-radius: var(--border-radius-md); border: 1px dashed var(--border-color);"><i class="fa-solid fa-door-closed" style="font-size:3rem; margin-bottom:1rem; opacity:0.5;"></i><br>ไม่พบข้อมูลห้องพักตรงตามเงื่อนไข</div>`;
             return;
         }
 
         rooms.forEach(room => {
             const isAvailable = room.status === 'available';
             const statusLabel = {
-                'available': 'ห้องว่าง',
+                'available': 'ห้องว่างพร้อมจอง',
                 'occupied': 'มีผู้เข้าพักแล้ว',
-                'maintenance': 'กำลังปรับปรุงซ่อมแซม',
-                'reserved': 'รอการยืนยันจอง'
+                'maintenance': 'กำลังซ่อมแซม',
+                'reserved': 'ติดจอง'
             }[room.status] || room.status;
 
             const cardHtml = `
                 <div class="room-card">
                     <div class="room-img-container">
                         <img src="${room.image_url || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=600&q=80'}" class="room-img" alt="Room ${room.room_number}">
-                        <span class="room-badge status-${room.status}">${statusLabel}</span>
+                        <span class="room-badge status-${room.status}">
+                            <span class="status-dot"></span> ${statusLabel}
+                        </span>
                     </div>
                     <div class="room-body">
                         <div class="room-header">
                             <div class="room-title">ห้อง ${room.room_number} (ชั้น ${room.floor})</div>
                             <div class="room-price">฿${room.price_per_month.toLocaleString()} <span>/เดือน</span></div>
                         </div>
-                        <div class="room-type-tag"><i class="fa-solid fa-bed"></i> ${room.room_type} | เงินประกัน ฿${room.deposit.toLocaleString()}</div>
+                        <div class="room-type-tag"><i class="fa-solid fa-layer-group" style="color:var(--primary);"></i> ${room.room_type} | เงินประกัน ฿${room.deposit.toLocaleString()}</div>
                         <div class="room-desc">${room.description || 'ไม่มีรายละเอียดเพิ่มเติม'}</div>
                         <div>
                             ${isAvailable && currentUser.role === 'student' ? `
@@ -224,7 +261,6 @@ function openBookingModal(roomId, roomNumber, price) {
     document.getElementById('bookRoomNumber').value = `ห้อง ${roomNumber}`;
     document.getElementById('bookRoomPrice').value = `฿${price.toLocaleString()} บาท/เดือน`;
     
-    // Set default move-in date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     document.getElementById('bookMoveInDate').value = tomorrow.toISOString().split('T')[0];
@@ -251,16 +287,16 @@ async function submitBooking(event) {
         });
         const data = await res.json();
         if (res.ok) {
-            alert("✅ " + data.message);
+            showToast(data.message, 'success');
             closeModal('modalBooking');
             loadRooms();
             loadStats();
         } else {
-            alert("❌ " + data.error);
+            showToast(data.error, 'error');
         }
     } catch (err) {
         console.error(err);
-        alert("เกิดข้อผิดพลาดในการจองห้องพัก");
+        showToast("เกิดข้อผิดพลาดในการจองห้องพัก", 'error');
     }
 }
 
@@ -277,7 +313,7 @@ async function loadRepairs() {
         tbody.innerHTML = '';
 
         if (repairs.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">ไม่มีรายการแจ้งซ่อม</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding:3rem;">ไม่มีรายการแจ้งซ่อม</td></tr>`;
             return;
         }
 
@@ -307,10 +343,10 @@ async function loadRepairs() {
                     <td><small>${new Date(r.reported_at).toLocaleDateString('th-TH')}</small></td>
                     <td>
                         ${(currentUser.role === 'admin' || currentUser.role === 'owner') && r.status !== 'completed' ? `
-                            <button class="btn btn-sm btn-success" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="updateRepairStatus(${r.id}, 'completed')">
+                            <button class="btn btn-sm btn-success" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="updateRepairStatus(${r.id}, 'completed')">
                                 <i class="fa-solid fa-check"></i> เสร็จสิ้น
                             </button>
-                            <button class="btn btn-sm btn-warning" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="updateRepairStatus(${r.id}, 'in_progress')">
+                            <button class="btn btn-sm btn-warning" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="updateRepairStatus(${r.id}, 'in_progress')">
                                 กำลังทำ
                             </button>
                         ` : '-'}
@@ -350,12 +386,12 @@ async function submitRepair(event) {
         });
         const data = await res.json();
         if (res.ok) {
-            alert("✅ " + data.message);
+            showToast(data.message, 'success');
             closeModal('modalRepair');
             loadRepairs();
             loadStats();
         } else {
-            alert("❌ " + data.error);
+            showToast(data.error, 'error');
         }
     } catch (err) {
         console.error(err);
@@ -371,7 +407,7 @@ async function updateRepairStatus(repairId, status) {
             body: JSON.stringify({ status: status, admin_note: note })
         });
         const data = await res.json();
-        alert("✅ " + data.message);
+        showToast(data.message, 'success');
         loadRepairs();
         loadStats();
     } catch (err) {
@@ -393,7 +429,7 @@ async function loadBills() {
         tbody.innerHTML = '';
 
         if (bills.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color: var(--text-muted);">ไม่มีรายการบิลค่าเช่า</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color: var(--text-muted); padding:3rem;">ไม่มีรายการบิลค่าเช่า</td></tr>`;
             return;
         }
 
@@ -411,21 +447,21 @@ async function loadBills() {
                     <td>${b.student_name}</td>
                     <td>฿${b.room_fee.toLocaleString()}</td>
                     <td>น้ำ ฿${b.water_fee} / ไฟ ฿${b.electricity_fee}</td>
-                    <td><b style="color:var(--primary); font-size:1.05rem;">฿${b.total_amount.toLocaleString()}</b></td>
+                    <td><b style="color:var(--primary); font-size:1.1rem;">฿${b.total_amount.toLocaleString()}</b></td>
                     <td><small>${b.due_date}</small></td>
                     <td>${statusBadge}</td>
                     <td>
-                        ${b.slip_url ? `<a href="${b.slip_url}" target="_blank" class="btn btn-outline" style="padding:0.25rem 0.5rem; font-size:0.8rem;"><i class="fa-solid fa-image"></i> ดูสลิป</a>` : '-'}
+                        ${b.slip_url ? `<a href="${b.slip_url}" target="_blank" class="btn btn-outline" style="padding:0.25rem 0.6rem; font-size:0.8rem;"><i class="fa-solid fa-image"></i> ดูสลิป</a>` : '-'}
                     </td>
                     <td>
                         ${currentUser.role === 'student' && b.status === 'unpaid' ? `
-                            <button class="btn btn-sm btn-success" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="openPaymentModal(${b.id}, ${b.total_amount})">
+                            <button class="btn btn-sm btn-success" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="openPaymentModal(${b.id}, ${b.total_amount})">
                                 <i class="fa-solid fa-upload"></i> แนบสลิป
                             </button>
                         ` : ''}
 
                         ${(currentUser.role === 'admin' || currentUser.role === 'owner') && b.status === 'pending_verification' ? `
-                            <button class="btn btn-sm btn-success" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="verifyPayment(${b.id}, 'approve')">
+                            <button class="btn btn-sm btn-success" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="verifyPayment(${b.id}, 'approve')">
                                 <i class="fa-solid fa-check"></i> ยืนยันสลิป
                             </button>
                         ` : ''}
@@ -457,7 +493,7 @@ async function submitPayment(event) {
             body: JSON.stringify({ slip_url: slipUrl })
         });
         const data = await res.json();
-        alert("✅ " + data.message);
+        showToast(data.message, 'success');
         closeModal('modalPay');
         loadBills();
     } catch (err) {
@@ -473,7 +509,7 @@ async function verifyPayment(billId, action) {
             body: JSON.stringify({ action: action, admin_id: currentUser.id })
         });
         const data = await res.json();
-        alert("✅ " + data.message);
+        showToast(data.message, 'success');
         loadBills();
         loadStats();
     } catch (err) {
@@ -493,7 +529,7 @@ async function loadBookings() {
         tbody.innerHTML = '';
 
         if (bookings.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">ไม่มีคำร้องจองห้องพัก</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color: var(--text-muted); padding:3rem;">ไม่มีคำร้องจองห้องพัก</td></tr>`;
             return;
         }
 
@@ -516,10 +552,10 @@ async function loadBookings() {
                     <td>${statusBadge}</td>
                     <td>
                         ${bk.status === 'pending' ? `
-                            <button class="btn btn-sm btn-success" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="processBooking(${bk.id}, 'approved')">
+                            <button class="btn btn-sm btn-success" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="processBooking(${bk.id}, 'approved')">
                                 <i class="fa-solid fa-check"></i> อนุมัติ
                             </button>
-                            <button class="btn btn-sm btn-danger" style="padding:0.3rem 0.6rem; font-size:0.8rem;" onclick="processBooking(${bk.id}, 'rejected')">
+                            <button class="btn btn-sm btn-danger" style="padding:0.35rem 0.75rem; font-size:0.82rem;" onclick="processBooking(${bk.id}, 'rejected')">
                                 <i class="fa-solid fa-xmark"></i> ปฏิเสธ
                             </button>
                         ` : '-'}
@@ -542,7 +578,7 @@ async function processBooking(bookingId, status) {
             body: JSON.stringify({ status: status })
         });
         const data = await res.json();
-        alert("✅ " + data.message);
+        showToast(data.message, 'success');
         loadBookings();
         loadRooms();
         loadStats();
@@ -567,13 +603,13 @@ async function loadAnnouncements() {
                 <div class="announcement-card ${item.priority === 'urgent' ? 'urgent' : ''}">
                     <div class="announcement-header">
                         <div class="announcement-title">
-                            ${item.priority === 'urgent' ? '<span class="badge badge-unpaid" style="margin-right:0.5rem;"><i class="fa-solid fa-triangle-exclamation"></i> ด่วน</span>' : ''}
+                            ${item.priority === 'urgent' ? '<span class="badge badge-unpaid" style="margin-right:0.5rem;"><i class="fa-solid fa-triangle-exclamation"></i> ประกาศด่วน</span>' : ''}
                             ${item.title}
                         </div>
                         <div class="announcement-date"><i class="fa-regular fa-clock"></i> ${new Date(item.created_at).toLocaleString('th-TH')}</div>
                     </div>
-                    <div style="font-size: 0.95rem; color: var(--text-dark); margin-top: 0.5rem;">${item.content}</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">ประกาศโดย: ${item.author_name}</div>
+                    <div style="font-size: 0.96rem; color: var(--text-dark); margin-top: 0.5rem;">${item.content}</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.6rem;"><i class="fa-solid fa-user-pen"></i> ประกาศโดย: ${item.author_name}</div>
                 </div>
             `;
             container.insertAdjacentHTML('beforeend', card);
@@ -605,7 +641,7 @@ async function submitAnnouncement(event) {
             })
         });
         const data = await res.json();
-        alert("✅ " + data.message);
+        showToast(data.message, 'success');
         closeModal('modalAnnounce');
         loadAnnouncements();
     } catch (err) {
