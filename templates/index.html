@@ -6,7 +6,7 @@
     <title>ระบบจัดการหอพักนักศึกษา - Next-Gen Executive Dashboard</title>
     <!-- Google Fonts & Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=5.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=6.0">
     <!-- Chart.js for Revenue Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -27,22 +27,22 @@
 
             <!-- Sidebar Navigation Menu Links -->
             <div class="sidebar-menu">
-                <div class="sidebar-link active" onclick="switchTab('dashboard')">
+                <div class="sidebar-link active" data-tab="dashboard" onclick="switchTab('dashboard', this)">
                     <i class="fa-solid fa-chart-pie"></i> ภาพรวมระบบ
                 </div>
-                <div class="sidebar-link" onclick="switchTab('rooms')">
+                <div class="sidebar-link" data-tab="rooms" onclick="switchTab('rooms', this)">
                     <i class="fa-solid fa-door-open"></i> รายการห้องพัก
                 </div>
-                <div class="sidebar-link" onclick="switchTab('repairs')">
+                <div class="sidebar-link" data-tab="repairs" onclick="switchTab('repairs', this)">
                     <i class="fa-solid fa-wrench"></i> คำร้องแจ้งซ่อม
                 </div>
-                <div class="sidebar-link" onclick="switchTab('bills')">
+                <div class="sidebar-link" data-tab="bills" onclick="switchTab('bills', this)">
                     <i class="fa-solid fa-receipt"></i> ค่าเช่าและการชำระ
                 </div>
-                <div class="sidebar-link" id="tabBookings" onclick="switchTab('bookings')">
+                <div class="sidebar-link" data-tab="bookings" id="tabBookings" onclick="switchTab('bookings', this)">
                     <i class="fa-solid fa-calendar-check"></i> อนุมัติจองห้องพัก
                 </div>
-                <div class="sidebar-link" onclick="switchTab('announcements')">
+                <div class="sidebar-link" data-tab="announcements" onclick="switchTab('announcements', this)">
                     <i class="fa-solid fa-bullhorn"></i> ประกาศข่าวสาร
                 </div>
             </div>
@@ -81,7 +81,7 @@
             <!-- ============================================================ -->
             <!-- Tab 1: Dashboard View -->
             <!-- ============================================================ -->
-            <div id="tab-dashboard" class="tab-content active">
+            <div id="tab-dashboard" class="tab-content active" style="display: block;">
                 <div class="metrics-row">
                     <div class="metric-glass-card">
                         <div class="metric-icon indigo"><i class="fa-solid fa-bed"></i></div>
@@ -146,7 +146,7 @@
             <!-- ============================================================ -->
             <!-- Tab 2: Rooms View -->
             <!-- ============================================================ -->
-            <div id="tab-rooms" class="tab-content">
+            <div id="tab-rooms" class="tab-content" style="display: none;">
                 <div style="background:var(--bg-card); padding:1.25rem 1.75rem; border-radius:var(--radius-md); border:1px solid var(--border-glass); margin-bottom:2rem; display:flex; justify-content:space-between; align-items:center;">
                     <div style="display:flex; gap:1.25rem; align-items:center;">
                         <label><i class="fa-solid fa-filter" style="color:var(--accent-primary);"></i> สถานะ:</label>
@@ -180,7 +180,7 @@
             <!-- ============================================================ -->
             <!-- Tab 3: Repairs View -->
             <!-- ============================================================ -->
-            <div id="tab-repairs" class="tab-content">
+            <div id="tab-repairs" class="tab-content" style="display: none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                     <h3><i class="fa-solid fa-wrench" style="color:var(--accent-primary);"></i> รายการแจ้งซ่อมแซม</h3>
                     <button class="btn-glowing primary" onclick="openNewRepairModal()">
@@ -212,7 +212,7 @@
             <!-- ============================================================ -->
             <!-- Tab 4: Bills View -->
             <!-- ============================================================ -->
-            <div id="tab-bills" class="tab-content">
+            <div id="tab-bills" class="tab-content" style="display: none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                     <h3><i class="fa-solid fa-receipt" style="color:var(--accent-primary);"></i> ประวัติค่าเช่าและการชำระเงิน</h3>
                     <select id="filterBillStatus" style="background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.5rem 1rem; border-radius:8px;" onchange="loadBills()">
@@ -248,7 +248,7 @@
             <!-- ============================================================ -->
             <!-- Tab 5: Bookings Approval View -->
             <!-- ============================================================ -->
-            <div id="tab-bookings" class="tab-content">
+            <div id="tab-bookings" class="tab-content" style="display: none;">
                 <h3 style="margin-bottom:1.5rem;"><i class="fa-solid fa-calendar-check" style="color:var(--accent-primary);"></i> รายการคำร้องขอจองห้องพัก</h3>
                 <div style="background:var(--bg-card); border-radius:var(--radius-md); border:1px solid var(--border-glass); overflow:hidden;">
                     <table style="width:100%; border-collapse:collapse; text-align:left;">
@@ -275,7 +275,7 @@
             <!-- ============================================================ -->
             <!-- Tab 6: Announcements View -->
             <!-- ============================================================ -->
-            <div id="tab-announcements" class="tab-content">
+            <div id="tab-announcements" class="tab-content" style="display: none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
                     <h3><i class="fa-solid fa-bullhorn" style="color:var(--amber);"></i> ประกาศข่าวสารหอพัก</h3>
                     <button class="btn-glowing warning" id="btnPostAnnouncement" onclick="openAnnouncementModal()">
@@ -432,6 +432,6 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}?v=5.0"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=6.0"></script>
 </body>
 </html>

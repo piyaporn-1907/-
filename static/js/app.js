@@ -1,6 +1,6 @@
 /* ============================================================
    ระบบจัดการหอพักนักศึกษา - Student Dormitory Management System
-   Frontend Interactive SPA Controller (Next-Gen Sidebar Edition)
+   Frontend Interactive SPA Controller (Robust Tabs Edition)
    ============================================================ */
 
 let currentUser = {
@@ -72,7 +72,6 @@ function switchRole(userId) {
     currentUser = user;
     updateUserBanner(user);
     
-    // Refresh all tables & dashboards based on new role context
     loadStats();
     loadRooms();
     loadRepairs();
@@ -88,20 +87,26 @@ function switchRole(userId) {
 }
 
 function updateUserBanner(user) {
-    document.getElementById('bannerUserName').innerText = `${user.full_name}`;
-    document.getElementById('welcomeGreeting').innerText = `ยินดีต้อนรับ! ${user.full_name} 👋`;
-    document.getElementById('userAvatar').innerText = user.full_name.charAt(0);
+    const nameEl = document.getElementById('bannerUserName');
+    const greetEl = document.getElementById('welcomeGreeting');
+    const avatarEl = document.getElementById('userAvatar');
+    const detailEl = document.getElementById('bannerUserDetail');
+    const badgeEl = document.getElementById('bannerRoleBadge');
 
-    document.getElementById('bannerUserDetail').innerHTML = `
-        <span><i class="fa-solid fa-id-badge"></i> ${getRoleTitle(user.role)}</span>
-        ${user.room_number ? '<span> | <i class="fa-solid fa-door-open"></i> ห้อง: ' + user.room_number + '</span>' : ''}
-        <span> | <i class="fa-solid fa-phone"></i> ${user.phone}</span>
-    `;
+    if (nameEl) nameEl.innerText = `${user.full_name}`;
+    if (greetEl) greetEl.innerText = `ยินดีต้อนรับ! ${user.full_name} 👋`;
+    if (avatarEl) avatarEl.innerText = user.full_name.charAt(0);
+
+    if (detailEl) {
+        detailEl.innerHTML = `
+            <span><i class="fa-solid fa-id-badge"></i> ${getRoleTitle(user.role)}</span>
+            ${user.room_number ? '<span> | <i class="fa-solid fa-door-open"></i> ห้อง: ' + user.room_number + '</span>' : ''}
+            <span> | <i class="fa-solid fa-phone"></i> ${user.phone}</span>
+        `;
+    }
     
-    const badge = document.getElementById('bannerRoleBadge');
-    badge.innerText = getRoleTitle(user.role);
+    if (badgeEl) badgeEl.innerText = getRoleTitle(user.role);
 
-    // Toggle Role-specific UI buttons
     const isAdminOrOwner = user.role === 'admin' || user.role === 'owner';
     const btnAddRoom = document.getElementById('btnAdminAddRoom');
     const btnAnnounce = document.getElementById('btnAdminAnnouncement');
@@ -126,18 +131,34 @@ function getRoleTitle(role) {
 }
 
 // ------------------------------------------------------------
-// Navigation Tabs Switcher
+// Navigation Tabs Switcher (Robust Implementation)
 // ------------------------------------------------------------
-function switchTab(tabId) {
+function switchTab(tabId, element = null) {
+    // 1. Remove active state from all sidebar items
     document.querySelectorAll('.sidebar-link').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-    const activeBtn = Array.from(document.querySelectorAll('.sidebar-link')).find(btn => btn.getAttribute('onclick').includes(tabId));
-    if (activeBtn) activeBtn.classList.add('active');
+    // 2. Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+    });
 
+    // 3. Highlight current sidebar item
+    if (element) {
+        element.classList.add('active');
+    } else {
+        const foundBtn = document.querySelector(`.sidebar-link[data-tab="${tabId}"]`);
+        if (foundBtn) foundBtn.classList.add('active');
+    }
+
+    // 4. Show target tab content
     const targetTab = document.getElementById(`tab-${tabId}`);
-    if (targetTab) targetTab.classList.add('active');
+    if (targetTab) {
+        targetTab.classList.add('active');
+        targetTab.style.display = 'block';
+    }
 
+    // 5. Trigger tab data refresh
     if (tabId === 'rooms') loadRooms();
     if (tabId === 'repairs') loadRepairs();
     if (tabId === 'bills') loadBills();
