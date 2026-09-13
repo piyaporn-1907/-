@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการหอพักนักศึกษา - Dormitory Management System</title>
+    <title>ระบบจัดการหอพักนักศึกษา - Student Dormitory Management System</title>
     <!-- Google Fonts & Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Chart.js for Owner Revenue Analytics -->
+    <!-- Chart.js for Revenue Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -15,7 +15,9 @@
     <!-- Header Navbar -->
     <nav class="navbar">
         <a href="#" class="navbar-brand">
-            <i class="fa-solid fa-building-user"></i>
+            <div class="brand-logo-icon">
+                <i class="fa-solid fa-building-user"></i>
+            </div>
             <span>ระบบจัดการหอพักนักศึกษา</span>
         </a>
         <div class="role-switcher-container">
@@ -34,33 +36,39 @@
     <!-- Main Workspace -->
     <div class="main-container">
         
-        <!-- User Banner Info -->
-        <div class="user-banner">
-            <div class="user-banner-info">
-                <h2 id="bannerUserName">ผู้ดูแลหอพัก (คุณสมศักดิ์)</h2>
-                <p id="bannerUserDetail">ผู้ดูแลหอพัก | โทร: 089-111-2222 | caretaker@dorm.com</p>
+        <!-- Hero Banner Info -->
+        <div class="hero-banner">
+            <div class="hero-banner-content">
+                <h1 id="bannerUserName">คุณสมศักดิ์ ผู้ดูแลหอ</h1>
+                <p id="bannerUserDetail">
+                    <span><i class="fa-solid fa-id-badge"></i> ผู้ดูแลหอพัก</span>
+                    <span><i class="fa-solid fa-phone"></i> 089-111-2222</span>
+                    <span><i class="fa-solid fa-envelope"></i> caretaker@dorm.com</span>
+                </p>
             </div>
-            <span id="bannerRoleBadge" class="badge-role admin">ผู้ดูแลหอพัก</span>
+            <span id="bannerRoleBadge" class="hero-badge-pill admin">
+                <i class="fa-solid fa-user-shield"></i> ผู้ดูแลหอพัก
+            </span>
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="nav-tabs" id="mainTabs">
-            <button class="tab-btn active" onclick="switchTab('dashboard')">
+        <div class="nav-tabs-container" id="mainTabs">
+            <button class="tab-pill active" onclick="switchTab('dashboard')">
                 <i class="fa-solid fa-chart-pie"></i> ภาพรวมระบบ
             </button>
-            <button class="tab-btn" onclick="switchTab('rooms')">
+            <button class="tab-pill" onclick="switchTab('rooms')">
                 <i class="fa-solid fa-door-open"></i> รายการห้องพัก
             </button>
-            <button class="tab-btn" onclick="switchTab('repairs')">
+            <button class="tab-pill" onclick="switchTab('repairs')">
                 <i class="fa-solid fa-wrench"></i> การแจ้งซ่อม
             </button>
-            <button class="tab-btn" onclick="switchTab('bills')">
-                <i class="fa-solid fa-file-invoice-dollar"></i> ค่าเช่าและการชำระ
+            <button class="tab-pill" onclick="switchTab('bills')">
+                <i class="fa-solid fa-receipt"></i> ค่าเช่าและการชำระ
             </button>
-            <button class="tab-btn" id="tabBookings" onclick="switchTab('bookings')">
+            <button class="tab-pill" id="tabBookings" onclick="switchTab('bookings')">
                 <i class="fa-solid fa-calendar-check"></i> คำร้องจองห้องพัก
             </button>
-            <button class="tab-btn" onclick="switchTab('announcements')">
+            <button class="tab-pill" onclick="switchTab('announcements')">
                 <i class="fa-solid fa-bullhorn"></i> ประกาศข่าวสาร
             </button>
         </div>
@@ -69,60 +77,60 @@
         <!-- Tab 1: Dashboard View -->
         <!-- ============================================================ -->
         <div id="tab-dashboard" class="tab-content active">
-            <div class="stats-grid" id="statsGrid">
-                <div class="stat-card">
-                    <div class="stat-icon blue"><i class="fa-solid fa-bed"></i></div>
-                    <div class="stat-info">
+            <div class="metrics-grid" id="statsGrid">
+                <div class="metric-card">
+                    <div class="metric-icon-box purple"><i class="fa-solid fa-bed"></i></div>
+                    <div class="metric-info">
                         <h4>ห้องพักทั้งหมด</h4>
-                        <div class="stat-value" id="statTotalRooms">0</div>
+                        <div class="metric-num" id="statTotalRooms">0</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
-                    <div class="stat-info">
+                <div class="metric-card">
+                    <div class="metric-icon-box emerald"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="metric-info">
                         <h4>ห้องว่างพร้อมจอง</h4>
-                        <div class="stat-value" id="statAvailableRooms">0</div>
+                        <div class="metric-num" id="statAvailableRooms">0</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon amber"><i class="fa-solid fa-user-check"></i></div>
-                    <div class="stat-info">
+                <div class="metric-card">
+                    <div class="metric-icon-box amber"><i class="fa-solid fa-user-check"></i></div>
+                    <div class="metric-info">
                         <h4>ห้องที่มีผู้เข้าพัก</h4>
-                        <div class="stat-value" id="statOccupiedRooms">0</div>
+                        <div class="metric-num" id="statOccupiedRooms">0</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon red"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-                    <div class="stat-info">
+                <div class="metric-card">
+                    <div class="metric-icon-box rose"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <div class="metric-info">
                         <h4>รอดำเนินการซ่อม</h4>
-                        <div class="stat-value" id="statPendingRepairs">0</div>
+                        <div class="metric-num" id="statPendingRepairs">0</div>
                     </div>
                 </div>
             </div>
 
             <!-- Owner Executive Analytics & Revenue Section -->
-            <div id="ownerRevenueSection" class="table-container" style="padding: 1.5rem; margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3><i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> รายงานสรุปรายรับและสถิติการเข้าพัก (สำหรับเจ้าของหอพัก)</h3>
-                    <span class="badge badge-paid" style="font-size: 0.9rem;">อัปเดตเรียลไทม์</span>
+            <div id="ownerRevenueSection" class="table-wrapper" style="padding: 2rem; margin-bottom: 2.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3><i class="fa-solid fa-chart-line" style="color: var(--accent-primary);"></i> รายงานสรุปรายรับและสถิติการเข้าพัก (สำหรับเจ้าของหอพัก)</h3>
+                    <span class="badge-capsule badge-completed"><i class="fa-solid fa-bolt"></i> อัปเดตเรียลไทม์</span>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
-                    <div>
-                        <canvas id="revenueChart" height="220"></canvas>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-top: 1rem;">
+                    <div style="background:#f8fafc; padding:1.5rem; border-radius:16px; border:1px solid #e2e8f0;">
+                        <canvas id="revenueChart" height="230"></canvas>
                     </div>
-                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
-                        <div class="stat-card" style="margin-bottom:0;">
-                            <div class="stat-icon green"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                            <div class="stat-info">
+                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 1.25rem;">
+                        <div class="metric-card" style="margin-bottom:0; background:#f0fdf4; border-color:#bbf7d0;">
+                            <div class="metric-icon-box emerald"><i class="fa-solid fa-wallet"></i></div>
+                            <div class="metric-info">
                                 <h4>รายรับค่าเช่าเดือนนี้ (รับแล้ว)</h4>
-                                <div class="stat-value" id="statMonthlyRevenue" style="color: var(--success);">฿0.00</div>
+                                <div class="metric-num" id="statMonthlyRevenue" style="color: var(--emerald);">฿0.00</div>
                             </div>
                         </div>
-                        <div class="stat-card" style="margin-bottom:0;">
-                            <div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div>
-                            <div class="stat-info">
+                        <div class="metric-card" style="margin-bottom:0; background:#fffbeb; border-color:#fde68a;">
+                            <div class="metric-icon-box amber"><i class="fa-solid fa-hourglass-half"></i></div>
+                            <div class="metric-info">
                                 <h4>ยอดค้างชำระรอรับ</h4>
-                                <div class="stat-value" id="statPendingRevenue" style="color: var(--warning);">฿0.00</div>
+                                <div class="metric-num" id="statPendingRevenue" style="color: var(--amber);">฿0.00</div>
                             </div>
                         </div>
                     </div>
@@ -130,14 +138,14 @@
             </div>
 
             <!-- Quick Action Shortcuts -->
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <button class="btn btn-primary" onclick="openNewRepairModal()">
+            <div style="display: flex; gap: 1.25rem; flex-wrap: wrap;">
+                <button class="btn-action btn-accent" onclick="openNewRepairModal()">
                     <i class="fa-solid fa-plus-circle"></i> แจ้งซ่อมแซมห้องพัก
                 </button>
-                <button class="btn btn-success" id="btnAdminAddRoom" onclick="openNewRoomModal()">
+                <button class="btn-action btn-emerald" id="btnAdminAddRoom" onclick="openNewRoomModal()">
                     <i class="fa-solid fa-house-medical"></i> เพิ่มห้องพักใหม่
                 </button>
-                <button class="btn btn-warning" id="btnAdminAnnouncement" onclick="openAnnouncementModal()">
+                <button class="btn-action btn-amber" id="btnAdminAnnouncement" onclick="openAnnouncementModal()">
                     <i class="fa-solid fa-paper-plane"></i> ส่งประกาศแจ้งเตือน
                 </button>
             </div>
@@ -147,9 +155,9 @@
         <!-- Tab 2: Rooms View -->
         <!-- ============================================================ -->
         <div id="tab-rooms" class="tab-content">
-            <div class="filter-bar">
+            <div class="filter-toolbar">
                 <div class="filter-group">
-                    <label><i class="fa-solid fa-filter"></i> สถานะห้อง:</label>
+                    <label><i class="fa-solid fa-filter" style="color:var(--accent-primary);"></i> สถานะห้อง:</label>
                     <select id="filterRoomStatus" class="form-select" onchange="loadRooms()">
                         <option value="all">ทั้งหมด</option>
                         <option value="available">ว่าง (Available)</option>
@@ -158,7 +166,7 @@
                         <option value="reserved">ติดจอง (Reserved)</option>
                     </select>
 
-                    <label style="margin-left: 1rem;"><i class="fa-solid fa-layer-group"></i> ชั้น:</label>
+                    <label style="margin-left: 1.5rem;"><i class="fa-solid fa-layer-group" style="color:var(--accent-primary);"></i> ชั้น:</label>
                     <select id="filterRoomFloor" class="form-select" onchange="loadRooms()">
                         <option value="all">ทุกชั้น</option>
                         <option value="1">ชั้น 1</option>
@@ -167,13 +175,13 @@
                     </select>
                 </div>
 
-                <div id="studentBookingNotice" style="font-size: 0.9rem; color: var(--text-muted);">
-                    💡 คลิกที่ห้องพักสถานะ <b>"ว่าง"</b> เพื่อทำการจองห้องพัก
+                <div id="studentBookingNotice" style="font-size: 0.95rem; color: var(--text-muted);">
+                    💡 คลิกที่ห้องพักสถานะ <b>"ว่างพร้อมจอง"</b> เพื่อทำการส่งคำร้องจองห้องพัก
                 </div>
             </div>
 
             <div class="rooms-grid" id="roomsContainer">
-                <!-- Dynamic Room Cards inserted here -->
+                <!-- Dynamic Luxury Room Cards inserted here -->
             </div>
         </div>
 
@@ -181,15 +189,15 @@
         <!-- Tab 3: Repairs View -->
         <!-- ============================================================ -->
         <div id="tab-repairs" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3><i class="fa-solid fa-wrench"></i> รายการแจ้งซ่อมแซม</h3>
-                <button class="btn btn-primary" onclick="openNewRepairModal()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem;">
+                <h3><i class="fa-solid fa-wrench" style="color:var(--accent-primary);"></i> รายการแจ้งซ่อมแซม</h3>
+                <button class="btn-action btn-accent" onclick="openNewRepairModal()">
                     <i class="fa-solid fa-plus"></i> ส่งคำร้องแจ้งซ่อม
                 </button>
             </div>
 
-            <div class="table-container">
-                <table class="table">
+            <div class="table-wrapper">
+                <table class="table-custom">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -214,8 +222,8 @@
         <!-- Tab 4: Bills View -->
         <!-- ============================================================ -->
         <div id="tab-bills" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3><i class="fa-solid fa-file-invoice-dollar"></i> ประวัติค่าเช่าและการชำระเงิน</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem;">
+                <h3><i class="fa-solid fa-receipt" style="color:var(--accent-primary);"></i> ประวัติค่าเช่าและการชำระเงิน</h3>
                 <div class="filter-group">
                     <select id="filterBillStatus" class="form-select" onchange="loadBills()">
                         <option value="all">สถานะทั้งหมด</option>
@@ -226,8 +234,8 @@
                 </div>
             </div>
 
-            <div class="table-container">
-                <table class="table">
+            <div class="table-wrapper">
+                <table class="table-custom">
                     <thead>
                         <tr>
                             <th>รอบเดือน</th>
@@ -253,9 +261,9 @@
         <!-- Tab 5: Bookings Approval View (Admin View) -->
         <!-- ============================================================ -->
         <div id="tab-bookings" class="tab-content">
-            <h3 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-clipboard-check"></i> รายการคำร้องขอจองห้องพัก</h3>
-            <div class="table-container">
-                <table class="table">
+            <h3 style="margin-bottom: 1.75rem;"><i class="fa-solid fa-clipboard-check" style="color:var(--accent-primary);"></i> รายการคำร้องขอจองห้องพัก</h3>
+            <div class="table-wrapper">
+                <table class="table-custom">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -280,9 +288,9 @@
         <!-- Tab 6: Announcements View -->
         <!-- ============================================================ -->
         <div id="tab-announcements" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3><i class="fa-solid fa-bullhorn"></i> ประกาศแจ้งเตือนจากหอพัก</h3>
-                <button class="btn btn-warning" id="btnPostAnnouncement" onclick="openAnnouncementModal()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.75rem;">
+                <h3><i class="fa-solid fa-bullhorn" style="color:var(--amber);"></i> ประกาศแจ้งเตือนจากหอพัก</h3>
+                <button class="btn-action btn-amber" id="btnPostAnnouncement" onclick="openAnnouncementModal()">
                     <i class="fa-solid fa-plus"></i> เพิ่มประกาศใหม่
                 </button>
             </div>
@@ -294,9 +302,8 @@
 
     </div>
 
-    <!-- ============================================================ -->
-    <!-- Modal 1: Room Booking Modal -->
-    <!-- ============================================================ -->
+    <!-- Modals -->
+    <!-- Modal 1: Booking -->
     <div class="modal-backdrop" id="modalBooking">
         <div class="modal-box">
             <div class="modal-header">
@@ -323,17 +330,15 @@
                         <textarea id="bookNote" class="form-control" rows="3" placeholder="ระบุความต้องการเพิ่มเติม..."></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" onclick="closeModal('modalBooking')">ยกเลิก</button>
-                        <button type="submit" class="btn btn-primary">ส่งคำร้องจองห้อง</button>
+                        <button type="button" class="btn-action btn-outline" onclick="closeModal('modalBooking')">ยกเลิก</button>
+                        <button type="submit" class="btn-action btn-accent">ส่งคำร้องจองห้อง</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- Modal 2: New Repair Modal -->
-    <!-- ============================================================ -->
+    <!-- Modal 2: Repair -->
     <div class="modal-backdrop" id="modalRepair">
         <div class="modal-box">
             <div class="modal-header">
@@ -370,17 +375,15 @@
                         <textarea id="repairDesc" class="form-control" rows="3" placeholder="อธิบายอาการชำรุด หรือเวลาที่สะดวกให้ช่างเข้าซ่อม..." required></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" onclick="closeModal('modalRepair')">ยกเลิก</button>
-                        <button type="submit" class="btn btn-primary">ส่งเรื่องแจ้งซ่อม</button>
+                        <button type="button" class="btn-action btn-outline" onclick="closeModal('modalRepair')">ยกเลิก</button>
+                        <button type="submit" class="btn-action btn-accent">ส่งเรื่องแจ้งซ่อม</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- Modal 3: Payment Slip Upload Modal -->
-    <!-- ============================================================ -->
+    <!-- Modal 3: Payment Slip -->
     <div class="modal-backdrop" id="modalPay">
         <div class="modal-box">
             <div class="modal-header">
@@ -390,28 +393,26 @@
             <div class="modal-body">
                 <form id="formPay" onsubmit="submitPayment(event)">
                     <input type="hidden" id="payBillId">
-                    <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem; text-align: center;">
-                        <p style="font-size: 0.9rem; color: var(--text-muted);">สแกน QR Code พร้อมเพย์ หรือ โอนเข้าบัญชีหอพัก</p>
-                        <h4 style="font-size: 1.1rem; color: var(--primary); margin: 0.4rem 0;">ธนาคารกสิกรไทย: 012-3-45678-9</h4>
+                    <div style="background: #f8fafc; padding: 1.25rem; border-radius: 14px; margin-bottom: 1.4rem; text-align: center; border:1px solid #e2e8f0;">
+                        <p style="font-size: 0.92rem; color: var(--text-muted);">สแกน QR Code พร้อมเพย์ หรือ โอนเข้าบัญชีหอพัก</p>
+                        <h4 style="font-size: 1.2rem; color: var(--accent-primary); margin: 0.4rem 0;">ธนาคารกสิกรไทย: 012-3-45678-9</h4>
                         <p style="font-weight: 600;">ชื่อบัญชี: หอพักนักศึกษาพีอาร์เอ็ม</p>
-                        <h3 style="font-size: 1.4rem; color: var(--success); margin-top: 0.5rem;" id="payTotalAmount">ยอดชำระ: ฿0.00</h3>
+                        <h3 style="font-size: 1.6rem; color: var(--emerald); margin-top: 0.6rem;" id="payTotalAmount">ยอดชำระ: ฿0.00</h3>
                     </div>
                     <div class="form-group">
                         <label>URL หลักฐานสลิปการโอนเงิน (URL หรือ อัปโหลด):</label>
                         <input type="text" id="paySlipUrl" class="form-control" value="https://via.placeholder.com/400x600/10b981/ffffff?text=Slip+Transfer+Verified" required>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" onclick="closeModal('modalPay')">ยกเลิก</button>
-                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-cloud-arrow-up"></i> ส่งหลักฐานการชำระ</button>
+                        <button type="button" class="btn-action btn-outline" onclick="closeModal('modalPay')">ยกเลิก</button>
+                        <button type="submit" class="btn-action btn-emerald"><i class="fa-solid fa-cloud-arrow-up"></i> ส่งหลักฐานการชำระ</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- ============================================================ -->
-    <!-- Modal 4: Announcement Creation Modal -->
-    <!-- ============================================================ -->
+    <!-- Modal 4: Announcement -->
     <div class="modal-backdrop" id="modalAnnounce">
         <div class="modal-box">
             <div class="modal-header">
@@ -436,8 +437,8 @@
                         <textarea id="announceContent" class="form-control" rows="4" required></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline" onclick="closeModal('modalAnnounce')">ยกเลิก</button>
-                        <button type="submit" class="btn btn-warning">เผยแพร่ประกาศ</button>
+                        <button type="button" class="btn-action btn-outline" onclick="closeModal('modalAnnounce')">ยกเลิก</button>
+                        <button type="submit" class="btn-action btn-amber">เผยแพร่ประกาศ</button>
                     </div>
                 </form>
             </div>
@@ -446,7 +447,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>© 2026 ระบบจัดการหอพักนักศึกษา (Dormitory Management System) | พัฒนาด้วย Python Flask & SQLite Database</p>
+        <p>© 2026 ระบบจัดการหอพักนักศึกษา (Dormitory Management System) | Hyper-Modern Executive Edition</p>
     </footer>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
