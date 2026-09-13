@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการหอพักนักศึกษา - Dormitory Management System</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Chart.js for Owner Revenue Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Header Navbar -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">
+            <i class="fa-solid fa-building-user"></i>
+            <span>ระบบจัดการหอพักนักศึกษา</span>
+        </a>
+        <div class="role-switcher-container">
+            <span class="role-switcher-label">
+                <i class="fa-solid fa-user-gear"></i> สลับมุมมองผู้ใช้:
+            </span>
+            <select id="userRoleSelect" class="role-select" onchange="switchRole(this.value)">
+                <option value="1">🎓 สมชาย ใจดี (นักศึกษา / ห้อง 102)</option>
+                <option value="4">🎓 วิชัย ขยันเรียน (นักศึกษาใหม่ / ยังไม่มีห้อง)</option>
+                <option value="5" selected>👨‍💼 คุณสมศักดิ์ (ผู้ดูแลหอพัก)</option>
+                <option value="6">👑 คุณดารานี (เจ้าของหอพัก)</option>
+            </select>
+        </div>
+    </nav>
+
+    <!-- Main Workspace -->
+    <div class="main-container">
+        
+        <!-- User Banner Info -->
+        <div class="user-banner">
+            <div class="user-banner-info">
+                <h2 id="bannerUserName">ผู้ดูแลหอพัก (คุณสมศักดิ์)</h2>
+                <p id="bannerUserDetail">ผู้ดูแลหอพัก | โทร: 089-111-2222 | caretaker@dorm.com</p>
+            </div>
+            <span id="bannerRoleBadge" class="badge-role admin">ผู้ดูแลหอพัก</span>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs" id="mainTabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-chart-pie"></i> ภาพรวมระบบ
+            </button>
+            <button class="tab-btn" onclick="switchTab('rooms')">
+                <i class="fa-solid fa-door-open"></i> รายการห้องพัก
+            </button>
+            <button class="tab-btn" onclick="switchTab('repairs')">
+                <i class="fa-solid fa-wrench"></i> การแจ้งซ่อม
+            </button>
+            <button class="tab-btn" onclick="switchTab('bills')">
+                <i class="fa-solid fa-file-invoice-dollar"></i> ค่าเช่าและการชำระ
+            </button>
+            <button class="tab-btn" id="tabBookings" onclick="switchTab('bookings')">
+                <i class="fa-solid fa-calendar-check"></i> คำร้องจองห้องพัก
+            </button>
+            <button class="tab-btn" onclick="switchTab('announcements')">
+                <i class="fa-solid fa-bullhorn"></i> ประกาศข่าวสาร
+            </button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Tab 1: Dashboard View -->
+        <!-- ============================================================ -->
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fa-solid fa-bed"></i></div>
+                    <div class="stat-info">
+                        <h4>ห้องพักทั้งหมด</h4>
+                        <div class="stat-value" id="statTotalRooms">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="stat-info">
+                        <h4>ห้องว่างพร้อมจอง</h4>
+                        <div class="stat-value" id="statAvailableRooms">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon amber"><i class="fa-solid fa-user-check"></i></div>
+                    <div class="stat-info">
+                        <h4>ห้องที่มีผู้เข้าพัก</h4>
+                        <div class="stat-value" id="statOccupiedRooms">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <div class="stat-info">
+                        <h4>รอดำเนินการซ่อม</h4>
+                        <div class="stat-value" id="statPendingRepairs">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Owner Executive Analytics & Revenue Section -->
+            <div id="ownerRevenueSection" class="table-container" style="padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3><i class="fa-solid fa-chart-line" style="color: var(--primary);"></i> รายงานสรุปรายรับและสถิติการเข้าพัก (สำหรับเจ้าของหอพัก)</h3>
+                    <span class="badge badge-paid" style="font-size: 0.9rem;">อัปเดตเรียลไทม์</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;">
+                    <div>
+                        <canvas id="revenueChart" height="220"></canvas>
+                    </div>
+                    <div style="display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
+                        <div class="stat-card" style="margin-bottom:0;">
+                            <div class="stat-icon green"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                            <div class="stat-info">
+                                <h4>รายรับค่าเช่าเดือนนี้ (รับแล้ว)</h4>
+                                <div class="stat-value" id="statMonthlyRevenue" style="color: var(--success);">฿0.00</div>
+                            </div>
+                        </div>
+                        <div class="stat-card" style="margin-bottom:0;">
+                            <div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div>
+                            <div class="stat-info">
+                                <h4>ยอดค้างชำระรอรับ</h4>
+                                <div class="stat-value" id="statPendingRevenue" style="color: var(--warning);">฿0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Shortcuts -->
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="openNewRepairModal()">
+                    <i class="fa-solid fa-plus-circle"></i> แจ้งซ่อมแซมห้องพัก
+                </button>
+                <button class="btn btn-success" id="btnAdminAddRoom" onclick="openNewRoomModal()">
+                    <i class="fa-solid fa-house-medical"></i> เพิ่มห้องพักใหม่
+                </button>
+                <button class="btn btn-warning" id="btnAdminAnnouncement" onclick="openAnnouncementModal()">
+                    <i class="fa-solid fa-paper-plane"></i> ส่งประกาศแจ้งเตือน
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Tab 2: Rooms View -->
+        <!-- ============================================================ -->
+        <div id="tab-rooms" class="tab-content">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label><i class="fa-solid fa-filter"></i> สถานะห้อง:</label>
+                    <select id="filterRoomStatus" class="form-select" onchange="loadRooms()">
+                        <option value="all">ทั้งหมด</option>
+                        <option value="available">ว่าง (Available)</option>
+                        <option value="occupied">มีผู้พักอาศัย (Occupied)</option>
+                        <option value="maintenance">กำลังปรับปรุง (Maintenance)</option>
+                        <option value="reserved">ติดจอง (Reserved)</option>
+                    </select>
+
+                    <label style="margin-left: 1rem;"><i class="fa-solid fa-layer-group"></i> ชั้น:</label>
+                    <select id="filterRoomFloor" class="form-select" onchange="loadRooms()">
+                        <option value="all">ทุกชั้น</option>
+                        <option value="1">ชั้น 1</option>
+                        <option value="2">ชั้น 2</option>
+                        <option value="3">ชั้น 3</option>
+                    </select>
+                </div>
+
+                <div id="studentBookingNotice" style="font-size: 0.9rem; color: var(--text-muted);">
+                    💡 คลิกที่ห้องพักสถานะ <b>"ว่าง"</b> เพื่อทำการจองห้องพัก
+                </div>
+            </div>
+
+            <div class="rooms-grid" id="roomsContainer">
+                <!-- Dynamic Room Cards inserted here -->
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Tab 3: Repairs View -->
+        <!-- ============================================================ -->
+        <div id="tab-repairs" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3><i class="fa-solid fa-wrench"></i> รายการแจ้งซ่อมแซม</h3>
+                <button class="btn btn-primary" onclick="openNewRepairModal()">
+                    <i class="fa-solid fa-plus"></i> ส่งคำร้องแจ้งซ่อม
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ห้อง / ผู้แจ้ง</th>
+                            <th>หัวข้อปัญหา</th>
+                            <th>หมวดหมู่</th>
+                            <th>ระดับความสำคัญ</th>
+                            <th>สถานะ</th>
+                            <th>บันทึกผู้ดูแล</th>
+                            <th>วันที่แจ้ง</th>
+                            <th>การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repairsTableBody">
+                        <!-- Dynamic Repair Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Tab 4: Bills View -->
+        <!-- ============================================================ -->
+        <div id="tab-bills" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3><i class="fa-solid fa-file-invoice-dollar"></i> ประวัติค่าเช่าและการชำระเงิน</h3>
+                <div class="filter-group">
+                    <select id="filterBillStatus" class="form-select" onchange="loadBills()">
+                        <option value="all">สถานะทั้งหมด</option>
+                        <option value="unpaid">ยังไม่ชำระ (Unpaid)</option>
+                        <option value="pending_verification">รอตรวจสอบสลิป</option>
+                        <option value="paid">ชำระแล้ว (Paid)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>รอบเดือน</th>
+                            <th>ห้องพัก</th>
+                            <th>ผู้พักอาศัย</th>
+                            <th>ค่าห้อง</th>
+                            <th>ค่าน้ำ/ไฟ</th>
+                            <th>รวมทั้งสิ้น</th>
+                            <th>กำหนดชำระ</th>
+                            <th>สถานะ</th>
+                            <th>สลิปโอนเงิน</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billsTableBody">
+                        <!-- Dynamic Bill Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Tab 5: Bookings Approval View (Admin View) -->
+        <!-- ============================================================ -->
+        <div id="tab-bookings" class="tab-content">
+            <h3 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-clipboard-check"></i> รายการคำร้องขอจองห้องพัก</h3>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>นักศึกษา</th>
+                            <th>เบอร์โทร</th>
+                            <th>ห้องที่จอง</th>
+                            <th>ประเภทห้อง</th>
+                            <th>วันที่ต้องการย้ายเข้า</th>
+                            <th>หมายเหตุ</th>
+                            <th>สถานะ</th>
+                            <th>การอนุมัติ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <!-- Dynamic Booking Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Tab 6: Announcements View -->
+        <!-- ============================================================ -->
+        <div id="tab-announcements" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3><i class="fa-solid fa-bullhorn"></i> ประกาศแจ้งเตือนจากหอพัก</h3>
+                <button class="btn btn-warning" id="btnPostAnnouncement" onclick="openAnnouncementModal()">
+                    <i class="fa-solid fa-plus"></i> เพิ่มประกาศใหม่
+                </button>
+            </div>
+
+            <div id="announcementsContainer">
+                <!-- Dynamic Announcement Cards -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Modal 1: Room Booking Modal -->
+    <!-- ============================================================ -->
+    <div class="modal-backdrop" id="modalBooking">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-hotel"></i> ยืนยันการจองห้องพัก</h3>
+                <button class="modal-close" onclick="closeModal('modalBooking')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formBooking" onsubmit="submitBooking(event)">
+                    <input type="hidden" id="bookRoomId">
+                    <div class="form-group">
+                        <label>หมายเลขห้องพัก:</label>
+                        <input type="text" id="bookRoomNumber" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>ค่าเช่าต่อเดือน:</label>
+                        <input type="text" id="bookRoomPrice" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>วันที่ต้องการย้ายเข้า:</label>
+                        <input type="date" id="bookMoveInDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>หมายเหตุเพิ่มเติม:</label>
+                        <textarea id="bookNote" class="form-control" rows="3" placeholder="ระบุความต้องการเพิ่มเติม..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('modalBooking')">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">ส่งคำร้องจองห้อง</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Modal 2: New Repair Modal -->
+    <!-- ============================================================ -->
+    <div class="modal-backdrop" id="modalRepair">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-wrench"></i> แจ้งซ่อมแซมห้องพัก</h3>
+                <button class="modal-close" onclick="closeModal('modalRepair')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formRepair" onsubmit="submitRepair(event)">
+                    <div class="form-group">
+                        <label>หัวข้อปัญหา / อุปกรณ์ที่ชำรุด:</label>
+                        <input type="text" id="repairTitle" class="form-control" placeholder="เช่น แอร์เย็นน้อย, หลอดไฟดับ" required>
+                    </div>
+                    <div class="form-group">
+                        <label>หมวดหมู่การซ่อม:</label>
+                        <select id="repairCategory" class="form-select" style="width:100%;" required>
+                            <option value="เครื่องปรับอากาศ">เครื่องปรับอากาศ (แอร์)</option>
+                            <option value="ไฟฟ้า">ระบบไฟฟ้า / หลอดไฟ</option>
+                            <option value="ประปา">ระบบน้ำประปา / ห้องน้ำ</option>
+                            <option value="เฟอร์นิเจอร์">เตียง / ตู้ / โต๊ะ / ประตู</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>ระดับความเร่งด่วน:</label>
+                        <select id="repairPriority" class="form-select" style="width:100%;">
+                            <option value="low">ปกติ (Low)</option>
+                            <option value="medium" selected>ปานกลาง (Medium)</option>
+                            <option value="high">ด่วน (High)</option>
+                            <option value="urgent">ด่วนที่สุด (Urgent)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>รายละเอียดเพิ่มเติม:</label>
+                        <textarea id="repairDesc" class="form-control" rows="3" placeholder="อธิบายอาการชำรุด หรือเวลาที่สะดวกให้ช่างเข้าซ่อม..." required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('modalRepair')">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">ส่งเรื่องแจ้งซ่อม</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Modal 3: Payment Slip Upload Modal -->
+    <!-- ============================================================ -->
+    <div class="modal-backdrop" id="modalPay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-qrcode"></i> ชำระค่าเช่าและแนบสลิปโอนเงิน</h3>
+                <button class="modal-close" onclick="closeModal('modalPay')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formPay" onsubmit="submitPayment(event)">
+                    <input type="hidden" id="payBillId">
+                    <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1.25rem; text-align: center;">
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">สแกน QR Code พร้อมเพย์ หรือ โอนเข้าบัญชีหอพัก</p>
+                        <h4 style="font-size: 1.1rem; color: var(--primary); margin: 0.4rem 0;">ธนาคารกสิกรไทย: 012-3-45678-9</h4>
+                        <p style="font-weight: 600;">ชื่อบัญชี: หอพักนักศึกษาพีอาร์เอ็ม</p>
+                        <h3 style="font-size: 1.4rem; color: var(--success); margin-top: 0.5rem;" id="payTotalAmount">ยอดชำระ: ฿0.00</h3>
+                    </div>
+                    <div class="form-group">
+                        <label>URL หลักฐานสลิปการโอนเงิน (URL หรือ อัปโหลด):</label>
+                        <input type="text" id="paySlipUrl" class="form-control" value="https://via.placeholder.com/400x600/10b981/ffffff?text=Slip+Transfer+Verified" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('modalPay')">ยกเลิก</button>
+                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-cloud-arrow-up"></i> ส่งหลักฐานการชำระ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Modal 4: Announcement Creation Modal -->
+    <!-- ============================================================ -->
+    <div class="modal-backdrop" id="modalAnnounce">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-bullhorn"></i> สร้างประกาศข่าวสารหอพัก</h3>
+                <button class="modal-close" onclick="closeModal('modalAnnounce')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formAnnounce" onsubmit="submitAnnouncement(event)">
+                    <div class="form-group">
+                        <label>หัวข้อประกาศ:</label>
+                        <input type="text" id="announceTitle" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ประเภทความสำคัญ:</label>
+                        <select id="announcePriority" class="form-select" style="width:100%;">
+                            <option value="normal">ประกาศทั่วไป (Normal)</option>
+                            <option value="urgent">ประกาศด่วน (Urgent)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>รายละเอียดประกาศ:</label>
+                        <textarea id="announceContent" class="form-control" rows="4" required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('modalAnnounce')">ยกเลิก</button>
+                        <button type="submit" class="btn btn-warning">เผยแพร่ประกาศ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 ระบบจัดการหอพักนักศึกษา (Dormitory Management System) | พัฒนาด้วย Python Flask & SQLite Database</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
