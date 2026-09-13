@@ -167,6 +167,15 @@ function switchTab(tabId, element = null) {
     if (tabId === 'dashboard') loadStats();
 }
 
+function filterRoomsByMetric(status) {
+    switchTab('rooms');
+    const select = document.getElementById('filterRoomStatus');
+    if (select) {
+        select.value = status;
+        loadRooms();
+    }
+}
+
 // ------------------------------------------------------------
 // 1. Dashboard Stats & Chart
 // ------------------------------------------------------------

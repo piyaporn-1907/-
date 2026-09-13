@@ -83,28 +83,28 @@
             <!-- ============================================================ -->
             <div id="tab-dashboard" class="tab-content active" style="display: block;">
                 <div class="metrics-row">
-                    <div class="metric-glass-card">
+                    <div class="metric-glass-card" onclick="filterRoomsByMetric('all')" style="cursor: pointer;" title="คลิกเพื่อดูห้องพักทั้งหมด">
                         <div class="metric-icon indigo"><i class="fa-solid fa-bed"></i></div>
                         <div>
                             <div style="font-size:0.88rem; color:var(--text-muted); font-weight:600;">ห้องพักทั้งหมด</div>
                             <div class="metric-num" id="statTotalRooms">0</div>
                         </div>
                     </div>
-                    <div class="metric-glass-card">
+                    <div class="metric-glass-card" onclick="filterRoomsByMetric('available')" style="cursor: pointer;" title="คลิกเพื่อดูห้องว่างพร้อมจอง">
                         <div class="metric-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
                         <div>
                             <div style="font-size:0.88rem; color:var(--text-muted); font-weight:600;">ห้องว่างพร้อมจอง</div>
                             <div class="metric-num" id="statAvailableRooms">0</div>
                         </div>
                     </div>
-                    <div class="metric-glass-card">
+                    <div class="metric-glass-card" onclick="filterRoomsByMetric('occupied')" style="cursor: pointer;" title="คลิกเพื่อดูห้องที่มีผู้เข้าพัก">
                         <div class="metric-icon amber"><i class="fa-solid fa-user-check"></i></div>
                         <div>
                             <div style="font-size:0.88rem; color:var(--text-muted); font-weight:600;">ห้องที่มีผู้เข้าพัก</div>
                             <div class="metric-num" id="statOccupiedRooms">0</div>
                         </div>
                     </div>
-                    <div class="metric-glass-card">
+                    <div class="metric-glass-card" onclick="switchTab('repairs')" style="cursor: pointer;" title="คลิกเพื่อดูรายการแจ้งซ่อม">
                         <div class="metric-icon rose"><i class="fa-solid fa-screwdriver-wrench"></i></div>
                         <div>
                             <div style="font-size:0.88rem; color:var(--text-muted); font-weight:600;">รอดำเนินการซ่อม</div>
