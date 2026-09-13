@@ -334,6 +334,12 @@
             </div>
             <div class="modal-body">
                 <form id="formRepair" onsubmit="submitRepair(event)">
+                    <div style="margin-bottom:1rem;" id="repairRoomSelectGroup">
+                        <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">ระบุห้องพัก:</label>
+                        <select id="repairRoomId" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;">
+                            <!-- Dynamically populated -->
+                        </select>
+                    </div>
                     <div style="margin-bottom:1rem;">
                         <label style="display:block; margin-bottom:0.4rem; font-size:0.9rem;">หัวข้อปัญหา / อุปกรณ์ชำรุด:</label>
                         <input type="text" id="repairTitle" style="width:100%; background:#0f172a; color:white; border:1px solid var(--border-glass); padding:0.6rem; border-radius:8px;" placeholder="เช่น แอร์เย็นน้อย, หลอดไฟดับ" required>
@@ -489,6 +495,6 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}?v=7.0"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=8.0"></script>
 </body>
 </html>

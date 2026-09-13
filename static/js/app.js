@@ -398,7 +398,26 @@ async function loadRepairs() {
     }
 }
 
-function openNewRepairModal() {
+async function openNewRepairModal() {
+    const select = document.getElementById('repairRoomId');
+    if (select) {
+        select.innerHTML = '';
+        try {
+            const res = await fetch('/api/rooms');
+            const rooms = await res.json();
+            rooms.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.id;
+                opt.textContent = `ห้อง ${r.room_number} (${r.room_type})`;
+                if (currentUser.room_id && currentUser.room_id == r.id) {
+                    opt.selected = true;
+                }
+                select.appendChild(opt);
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
     openModal('modalRepair');
 }
 
@@ -408,6 +427,8 @@ async function submitRepair(event) {
     const category = document.getElementById('repairCategory').value;
     const priority = document.getElementById('repairPriority').value;
     const desc = document.getElementById('repairDesc').value;
+    const roomSelect = document.getElementById('repairRoomId');
+    const selectedRoomId = roomSelect && roomSelect.value ? parseInt(roomSelect.value) : (currentUser.room_id || 1);
 
     try {
         const res = await fetch('/api/repairs', {
@@ -415,7 +436,7 @@ async function submitRepair(event) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 student_id: currentUser.id,
-                room_id: currentUser.room_id,
+                room_id: selectedRoomId,
                 title: title,
                 category: category,
                 priority: priority,

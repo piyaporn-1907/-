@@ -263,8 +263,9 @@ def create_repair():
     room_id = data.get('room_id') or (user['room_id'] if user else None)
     
     if not room_id:
-        conn.close()
-        return jsonify({'error': 'ผู้ใช้งานนี้ยังไม่มีห้องพักประจำ'}), 400
+        cursor.execute("SELECT id FROM rooms LIMIT 1")
+        first_room = cursor.fetchone()
+        room_id = first_room['id'] if first_room else 1
 
     cursor.execute('''
         INSERT INTO repairs (student_id, room_id, title, description, category, priority, status)
