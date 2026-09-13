@@ -6,9 +6,95 @@
     <title>ระบบจัดการหอพักนักศึกษา - Student Dormitory Management System</title>
     <!-- Google Fonts & Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3.0">
     <!-- Chart.js for Revenue Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Inline Aesthetics Guarantee & Immediate Cache Bypass */
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Prompt', 'Plus Jakarta Sans', sans-serif !important;
+            background: #0b0f19 !important;
+            color: #f8fafc !important;
+        }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.95) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        }
+
+        .hero-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311b92 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5) !important;
+            color: #ffffff !important;
+        }
+
+        .nav-tabs-container {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .tab-pill {
+            color: #94a3b8 !important;
+        }
+
+        .tab-pill.active {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4) !important;
+        }
+
+        .metric-card, .filter-toolbar, .room-luxury-card, .table-wrapper, .announcement-card {
+            background: #1e293b !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #f8fafc !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+        }
+
+        .room-card-title, .metric-num, h1, h2, h3, h4 {
+            color: #ffffff !important;
+        }
+
+        .room-desc, .metric-info h4, .room-amenities-tags, .filter-toolbar label {
+            color: #94a3b8 !important;
+        }
+
+        .form-select, .form-control {
+            background: #0f172a !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .table-custom th {
+            background: #0f172a !important;
+            color: #94a3b8 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .table-custom td {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+            color: #cbd5e1 !important;
+        }
+
+        .modal-box {
+            background: #1e293b !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .modal-header, .modal-footer {
+            background: #0f172a !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .modal-header h3 {
+            color: #ffffff !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -115,22 +201,22 @@
                     <span class="badge-capsule badge-completed"><i class="fa-solid fa-bolt"></i> อัปเดตเรียลไทม์</span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-top: 1rem;">
-                    <div style="background:#f8fafc; padding:1.5rem; border-radius:16px; border:1px solid #e2e8f0;">
+                    <div style="background:#0f172a; padding:1.5rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
                         <canvas id="revenueChart" height="230"></canvas>
                     </div>
                     <div style="display: flex; flex-direction: column; justify-content: center; gap: 1.25rem;">
-                        <div class="metric-card" style="margin-bottom:0; background:#f0fdf4; border-color:#bbf7d0;">
+                        <div class="metric-card" style="margin-bottom:0; background:#064e3b; border-color:#059669;">
                             <div class="metric-icon-box emerald"><i class="fa-solid fa-wallet"></i></div>
                             <div class="metric-info">
                                 <h4>รายรับค่าเช่าเดือนนี้ (รับแล้ว)</h4>
-                                <div class="metric-num" id="statMonthlyRevenue" style="color: var(--emerald);">฿0.00</div>
+                                <div class="metric-num" id="statMonthlyRevenue" style="color: #34d399;">฿0.00</div>
                             </div>
                         </div>
-                        <div class="metric-card" style="margin-bottom:0; background:#fffbeb; border-color:#fde68a;">
+                        <div class="metric-card" style="margin-bottom:0; background:#78350f; border-color:#d97706;">
                             <div class="metric-icon-box amber"><i class="fa-solid fa-hourglass-half"></i></div>
                             <div class="metric-info">
                                 <h4>ยอดค้างชำระรอรับ</h4>
-                                <div class="metric-num" id="statPendingRevenue" style="color: var(--amber);">฿0.00</div>
+                                <div class="metric-num" id="statPendingRevenue" style="color: #fbbf24;">฿0.00</div>
                             </div>
                         </div>
                     </div>
@@ -175,7 +261,7 @@
                     </select>
                 </div>
 
-                <div id="studentBookingNotice" style="font-size: 0.95rem; color: var(--text-muted);">
+                <div id="studentBookingNotice" style="font-size: 0.95rem; color: #94a3b8;">
                     💡 คลิกที่ห้องพักสถานะ <b>"ว่างพร้อมจอง"</b> เพื่อทำการส่งคำร้องจองห้องพัก
                 </div>
             </div>
@@ -393,10 +479,10 @@
             <div class="modal-body">
                 <form id="formPay" onsubmit="submitPayment(event)">
                     <input type="hidden" id="payBillId">
-                    <div style="background: #f8fafc; padding: 1.25rem; border-radius: 14px; margin-bottom: 1.4rem; text-align: center; border:1px solid #e2e8f0;">
-                        <p style="font-size: 0.92rem; color: var(--text-muted);">สแกน QR Code พร้อมเพย์ หรือ โอนเข้าบัญชีหอพัก</p>
+                    <div style="background: #0f172a; padding: 1.25rem; border-radius: 14px; margin-bottom: 1.4rem; text-align: center; border:1px solid rgba(255,255,255,0.1);">
+                        <p style="font-size: 0.92rem; color: #94a3b8;">สแกน QR Code พร้อมเพย์ หรือ โอนเข้าบัญชีหอพัก</p>
                         <h4 style="font-size: 1.2rem; color: var(--accent-primary); margin: 0.4rem 0;">ธนาคารกสิกรไทย: 012-3-45678-9</h4>
-                        <p style="font-weight: 600;">ชื่อบัญชี: หอพักนักศึกษาพีอาร์เอ็ม</p>
+                        <p style="font-weight: 600; color: #e2e8f0;">ชื่อบัญชี: หอพักนักศึกษาพีอาร์เอ็ม</p>
                         <h3 style="font-size: 1.6rem; color: var(--emerald); margin-top: 0.6rem;" id="payTotalAmount">ยอดชำระ: ฿0.00</h3>
                     </div>
                     <div class="form-group">
@@ -447,9 +533,9 @@
 
     <!-- Footer -->
     <footer>
-        <p>© 2026 ระบบจัดการหอพักนักศึกษา (Dormitory Management System) | Hyper-Modern Executive Edition</p>
+        <p>© 2026 ระบบจัดการหอพักนักศึกษา (Dormitory Management System) | Hyper-Modern Obsidian Executive Edition</p>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=3.0"></script>
 </body>
 </html>
